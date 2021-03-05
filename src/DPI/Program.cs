@@ -3,8 +3,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Memory;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using DPI;
+using Cake.Bridge.DependencyInjection;
+using DPI.Commands.NuGet;
+using DPI.Commands.Settings.NuGet;
 using Spectre.Console.Cli;
+using Spectre.Cli.Extensions.DependencyInjection;
 
 var serviceCollection = new ServiceCollection()
     .AddLogging(configure =>
@@ -23,8 +26,24 @@ var serviceCollection = new ServiceCollection()
                     })
                     .Build()
             ))
-    .AddHttpClient();
+    .AddHttpClient()
+    .AddCakeCore();
 
 using var registrar = new DependencyInjectionRegistrar(serviceCollection);
 var app = new CommandApp(registrar);
+
+app.Configure(
+    config =>
+    {
+        config.SetApplicationName("dpi");
+        config.ValidateExamples();
+        config.AddBranch<NuGetSettings>("nuget", nuGet => {
+            nuGet.SetDescription("NuGet dependency commands.");
+
+            nuGet.AddCommand<NuGetAnalyzeCommand>("analyze")
+                .WithDescription("Inventories NuGet packages")
+                .WithExample(new[] { "nuget", "<SourcePath>", "analyze" });
+        });
+    });
+
 return await app.RunAsync(args);
