@@ -5,11 +5,9 @@ namespace DPI.Commands.Settings.NuGet
 {
     public class NuGetAnalyzeSettings : NuGetSettings
     {
-         public NuGetAnalyzeSettings(ICakeContext context, ILogger<NuGetAnalyzeSettings> logger)
+        public NuGetAnalyzeSettings(ICakeContext context, ILogger<NuGetAnalyzeSettings> logger)
             : base(context, logger)
          {
-
          }
-
     }
 }

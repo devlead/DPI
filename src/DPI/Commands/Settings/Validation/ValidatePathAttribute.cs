@@ -6,11 +6,11 @@ namespace DPI.Commands.Settings.Validation
 {
     public class ValidatePathAttribute : ParameterValidationAttribute
     {
-        public ValidatePathAttribute() : base(null)
+        public ValidatePathAttribute() : base(null!)
         {
         }
 
-        public override ValidationResult Validate(ICommandParameterInfo parameterInfo, object value)
+        public override ValidationResult Validate(ICommandParameterInfo parameterInfo, object? value)
         {
             return value switch {
                 FilePath filePath when System.IO.File.Exists(filePath.FullPath)

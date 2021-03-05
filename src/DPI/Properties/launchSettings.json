@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "DPI": {
+      "commandName": "Project",
+      "commandLineArgs": "nuget \"..\\..\\..\\..\\..\" --output table analyze"
+    }
+  }
+}
