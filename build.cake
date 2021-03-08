@@ -1,3 +1,4 @@
+#addin nuget:?package=System.Text.Json&version=5.0.1&loaddependencies=true
 #load "build/records.cake"
 #load "build/helpers.cake"
 
@@ -7,11 +8,13 @@
 Setup(
     static context => {
         var gh = context.GitHubActions();
-        var version =
-            gh.IsRunningOnGitHubActions
-                ? FormattableString
-                    .Invariant($"{DateTime.UtcNow:yyyy.MM.dd}.{gh.Environment.Workflow.RunNumber}")
-                : "1.0.0.0";
+        var buildDate = DateTime.UtcNow;
+        var runNumber = gh.IsRunningOnGitHubActions
+                            ? gh.Environment.Workflow.RunNumber
+                            : (short)((buildDate - buildDate.Date).TotalSeconds/3);
+
+        var version = FormattableString
+                    .Invariant($"{buildDate:yyyy.M.d}.{runNumber}");
 
         context.Information("Building version {0}", version);
 
@@ -21,7 +24,6 @@ Setup(
         return new BuildData(
             version,
             "src",
-            "win-x64",
             new DotNetCoreMSBuildSettings()
                 .SetConfiguration("Release")
                 .SetVersion(version)
@@ -55,13 +57,11 @@ Task("Clean")
         static (context, data) => context.DotNetCoreRestore(
             data.ProjectRoot.FullPath,
             new DotNetCoreRestoreSettings {
-                Runtime = data.Runtime,
                 MSBuildSettings = data.MSBuildSettings
             }
         )
     )
 .Then("Build")
-    .Default()
     .Does<BuildData>(
         static (context, data) => context.DotNetCoreBuild(
             data.ProjectRoot.FullPath,
@@ -83,25 +83,80 @@ Task("Clean")
             }
         )
     )
-.Then("Publish")
+.Then("Integration-Tests-Tool-Manifest")
     .Does<BuildData>(
-        static (context, data) => context.DotNetCorePublish(
-            data.ProjectRoot.FullPath,
-            new DotNetCorePublishSettings {
-                NoBuild = true,
-                NoRestore = true,
-                PublishReadyToRun = true,
-                SelfContained = true,
-                PublishSingleFile = true,
-                PublishTrimmed = true,
-                OutputDirectory = data.BinaryOutputPath,
-                Runtime = data.Runtime,
-                ArgumentCustomization = arg => arg
-                                                .Append("-p:TrimMode=Link")
-                                                .Append("-p:IncludeNativeLibrariesInSingleFile=true")
-                                                .Append("-p:IncludeNativeLibrariesForSelfExtract=true"),
-                MSBuildSettings = data.MSBuildSettings
-            }
-        )
+        static (context, data) => context.DotNetCoreTool(
+                "new",
+                new DotNetCoreToolSettings {
+                    ArgumentCustomization = args => args
+                                                        .Append("tool-manifest"),
+                    WorkingDirectory = data.IntegrationTestPath
+                }
+            )
     )
+.Then("Integration-Tests-Tool-Install")
+    .Does<BuildData>(
+        static (context, data) =>  context.DotNetCoreTool(
+                "tool",
+                new DotNetCoreToolSettings {
+                    ArgumentCustomization = args => args
+                                                        .Append("install")
+                                                        .AppendSwitchQuoted("--add-source", data.NuGetOutputPath.FullPath)
+                                                        .AppendSwitchQuoted("--version", data.Version)
+                                                        .Append("dpi"),
+                    WorkingDirectory = data.IntegrationTestPath
+                }
+            )
+    )
+.Then("Integration-Tests-Tool-Analyze")
+    .Does<BuildData>(
+        static (context, data) => context.DotNetCoreTool(
+                "tool",
+                new DotNetCoreToolSettings {
+                    ArgumentCustomization = args => args
+                                                        .Append("run")
+                                                        .Append("dpi")
+                                                        .Append("nuget")
+                                                        .AppendSwitchQuoted("--output", "table")
+                                                        .Append("analyze"),
+                    WorkingDirectory = data.IntegrationTestPath
+                }
+            )
+    )
+.Then("Integration-Tests-Tool-Validate-Manifest")
+    .Does<BuildData>(
+        static (context, data) => {
+
+            IEnumerable<string> json;
+            var result = context.StartProcess(
+                "dotnet",
+                new ProcessSettings {
+                    Arguments = new ProcessArgumentBuilder()
+                                                        .Append("tool")
+                                                        .Append("run")
+                                                        .Append("dpi")
+                                                        .Append("nuget")
+                                                        .AppendSwitchQuoted("--output", "json")
+                                                        .Append("analyze"),
+                    WorkingDirectory = data.IntegrationTestPath,
+                    RedirectStandardOutput = true
+                },
+                out json
+            );
+
+            var packageReferences = System.Text.Json.JsonSerializer.Deserialize<DPIPackageReference[]>(
+                string.Concat(json)
+            );
+
+            Array.ForEach(
+                packageReferences,
+                packageReference => Assert.Equal(
+                    packageReference.Version,
+                    data.Version
+                    )
+            );
+        }
+    )
+.Then("Integration-Tests")
+    .Default()
 .Run();
