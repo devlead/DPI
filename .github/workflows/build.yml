@@ -27,7 +27,7 @@ jobs:
           echo ::group::".NET Tool Restore"
           dotnet tool restore
           echo ::endgroup::
-          dotnet cake --target=Pack
+          dotnet cake
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v2
