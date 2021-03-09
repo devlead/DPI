@@ -40,9 +40,13 @@ app.Configure(
         config.AddBranch<NuGetSettings>("nuget", nuGet => {
             nuGet.SetDescription("NuGet dependency commands.");
 
-            nuGet.AddCommand<NuGetAnalyzeCommand>("analyze")
+            nuGet.AddCommand<NuGetAnalyzeCommand<NuGetAnalyzeSettings>>("analyze")
                 .WithDescription("Inventories NuGet packages")
                 .WithExample(new[] { "nuget", "<SourcePath>", "analyze" });
+
+            nuGet.AddCommand<NuGetReportCommand>("report")
+                .WithDescription("Inventories NuGet packages and reports to Azure Log Analytics")
+                .WithExample(new[] { "nuget", "<SourcePath>", "report" });
         });
     });
 

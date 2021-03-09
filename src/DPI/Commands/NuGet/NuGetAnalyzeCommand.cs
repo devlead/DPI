@@ -9,32 +9,34 @@ using Microsoft.Extensions.Logging;
 using Cake.Common.IO;
 using Cake.Core.IO;
 using DPI.Commands.Models;
+using DPI.Commands.Settings;
 using DPI.Commands.Settings.NuGet;
 using Spectre.Console.Cli;
 
 namespace DPI.Commands.NuGet
 {
     // ReSharper disable once ClassNeverInstantiated.Global
-    public class NuGetAnalyzeCommand : NuGetCommand<NuGetAnalyzeSettings>
+    public class NuGetAnalyzeCommand<TSettings> : NuGetCommand<TSettings> where TSettings : NuGetAnalyzeSettings
     {
         private const string NuGetPackagesFilePattern = "{.csproj,dotnet-tools.json,packages.config}";
 
-        public override async Task<int> ExecuteAsync(CommandContext context, NuGetAnalyzeSettings settings)
+        public override async Task<int> ExecuteAsync(CommandContext context, TSettings settings)
         {
-            FilePathCollection  filePaths;
-            using(settings.Logger.BeginScope("GetFiles"))
+            FilePathCollection filePaths;
+            using (settings.Logger.BeginScope("GetFiles"))
             {
-                settings.Logger.LogInformation("Scanning {SourcePath} for {Pattern}...", settings.SourcePath, NuGetPackagesFilePattern);
+                settings.Logger.LogInformation("Scanning {SourcePath} for {Pattern}...", settings.SourcePath,
+                    NuGetPackagesFilePattern);
                 filePaths = settings.Context.GetFiles($"{settings.SourcePath}/**/*{NuGetPackagesFilePattern}");
                 settings.Logger.LogInformation("Found {Count} files.", filePaths.Count);
             }
 
             PackageReference[] packages;
-            using(settings.Logger.BeginScope("ParseFiles"))
+            using (settings.Logger.BeginScope("ParseFiles"))
             {
                 settings.Logger.LogInformation("Parsing files...");
                 packages = await ParseFiles(filePaths, settings)
-                            .ToArrayAsync();
+                    .ToArrayAsync();
                 settings.Logger.LogInformation("Found {LongLength}", packages.LongLength);
             }
 
@@ -46,20 +48,21 @@ namespace DPI.Commands.NuGet
             return 0;
         }
 
-        private async IAsyncEnumerable<PackageReference> ParseFiles(FilePathCollection filePaths, NuGetAnalyzeSettings settings)
+        private async IAsyncEnumerable<PackageReference> ParseFiles(FilePathCollection filePaths,
+            NuGetAnalyzeSettings settings)
         {
             foreach (var filePath in filePaths)
             {
-                await foreach(var package in (
+                await foreach (var package in (
                         filePath.GetFilename().FullPath,
                         Extension: filePath.GetExtension()
                     ) switch
-                {
-                    ("dotnet-tools.json", _) => ParseToolManifest(settings, filePath),
-                    ("packages.config", _) => ParsePackagesConfig(settings, filePath),
-                    (_, ".csproj") => ParseCSProj(settings, filePath),
-                    _ => AsyncEnumerable.Empty<PackageReference>()
-                })
+                    {
+                        ("dotnet-tools.json", _) => ParseToolManifest(settings, filePath),
+                        ("packages.config", _) => ParsePackagesConfig(settings, filePath),
+                        (_, ".csproj") => ParseCSProj(settings, filePath),
+                        _ => AsyncEnumerable.Empty<PackageReference>()
+                    })
                 {
                     yield return package;
                 }
@@ -90,7 +93,7 @@ namespace DPI.Commands.NuGet
             FilePath filePath,
             NuGetSourceType nuGetSourceType, string? packageId, string? version)
         {
-            return new (
+            return new(
                 settings.Context.MakeRelative(filePath, settings.SourcePath),
                 nuGetSourceType,
                 packageId,
@@ -98,7 +101,8 @@ namespace DPI.Commands.NuGet
             );
         }
 
-        private async IAsyncEnumerable<PackageReference> ParsePackagesConfig(NuGetAnalyzeSettings settings, FilePath filePath)
+        private async IAsyncEnumerable<PackageReference> ParsePackagesConfig(NuGetAnalyzeSettings settings,
+            FilePath filePath)
         {
             using (settings.Logger.BeginScope(nameof(ParsePackagesConfig)))
             {
@@ -117,13 +121,14 @@ namespace DPI.Commands.NuGet
             }
         }
 
-        private async IAsyncEnumerable<PackageReference> ParseToolManifest(NuGetAnalyzeSettings settings, FilePath filePath)
+        private async IAsyncEnumerable<PackageReference> ParseToolManifest(NuGetAnalyzeSettings settings,
+            FilePath filePath)
         {
             using (settings.Logger.BeginScope(nameof(ParseToolManifest)))
             {
                 await using var file = settings.Context.FileSystem.GetFile(filePath).OpenRead();
                 var dotNetToolsManifest = await JsonSerializer.DeserializeAsync<DotNetToolsManifest>(file);
-                
+
                 if (dotNetToolsManifest?.Tools?.Any() != true)
                 {
                     yield break;
@@ -137,7 +142,7 @@ namespace DPI.Commands.NuGet
                         NuGetSourceType.DotNetToolsManifest,
                         key,
                         value.Version
-                        );
+                    );
                 }
             }
         }

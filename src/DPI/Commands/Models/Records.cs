@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Cake.Core.IO;
 using DPI.Helper;
@@ -17,7 +18,13 @@ namespace DPI.Commands.Models
 
         [property: JsonPropertyName("version")]
         string? Version
-    );
+    )
+    {
+        private static readonly Guid CurrentSessionId = Guid.NewGuid();
+
+        [property: JsonPropertyName("sessionId")]
+        public Guid SessionId { get; init; } = CurrentSessionId;
+    }
 
 
     public record DotNetToolsManifest(

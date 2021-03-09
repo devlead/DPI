@@ -17,7 +17,7 @@ namespace DPI.Commands.NuGet
     public abstract class NuGetCommand<TCommandSettings> : AsyncCommand<TCommandSettings>
         where TCommandSettings : NuGetSettings
     {
-        protected static async Task OutputResult<T>(TCommandSettings settings, IEnumerable<T> results)
+        protected virtual async Task OutputResult<T>(TCommandSettings settings, IEnumerable<T> results)
         {
             await using var fileStream = (settings.OutputPath == null)
                 ? null
