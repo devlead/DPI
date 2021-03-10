@@ -12,12 +12,10 @@ namespace DPI.Commands.Models
         [property: JsonPropertyName("sessionId")]
         Guid SessionId,
 
-        [property: JsonPropertyName("buildProvider")]
-        [property: JsonConverter(typeof(JsonStringEnumConverter))]
+        [property: JsonPropertyName("buildProvider")] [property: JsonConverter(typeof(JsonStringEnumConverter))]
         BuildProvider BuildProvider,
 
-        [property: JsonPropertyName("platformFamily")]
-        [property: JsonConverter(typeof(JsonStringEnumConverter))]
+        [property: JsonPropertyName("platformFamily")] [property: JsonConverter(typeof(JsonStringEnumConverter))]
         PlatformFamily PlatformFamily,
 
         [property: JsonPropertyName("buildReference")]
@@ -38,7 +36,11 @@ namespace DPI.Commands.Models
 
         [property: JsonPropertyName("version")]
         string? Version = null
-    );
+    )
+    {
+        [property: JsonPropertyName("timestamp")]
+        public DateTimeOffset TimeStamp { get; } = DateTimeOffset.UtcNow;
+    }
 
 
     public record DotNetToolsManifest(
