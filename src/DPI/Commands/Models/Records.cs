@@ -27,6 +27,9 @@ namespace DPI.Commands.Models
         // ReSharper disable once InconsistentNaming
         string? BuildSCM,
 
+        [property: JsonPropertyName("buildVersion")]
+        string? BuildVersion,
+
         [property: JsonPropertyName("source")] [property: JsonConverter(typeof(FilePathJsonConverter))]
         FilePath? Source = null,
 

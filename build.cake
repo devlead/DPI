@@ -127,7 +127,8 @@ Task("Clean")
                                                             )
                                                                 ? "report"
                                                                 : "analyze"
-                                                            ),
+                                                            )
+                                                        .AppendSwitchQuoted("--buildversion", data.Version),
                     WorkingDirectory = data.IntegrationTestPath
                 }
             )
@@ -146,7 +147,8 @@ Task("Clean")
                                                         .Append("dpi")
                                                         .Append("nuget")
                                                         .AppendSwitchQuoted("--output", "json")
-                                                        .Append("analyze"),
+                                                        .Append("analyze")
+                                                        .AppendSwitchQuoted("--buildversion", data.Version),
                     WorkingDirectory = data.IntegrationTestPath,
                     RedirectStandardOutput = true
                 },

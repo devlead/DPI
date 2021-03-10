@@ -52,7 +52,7 @@ namespace DPI.Commands.NuGet
 
         private async IAsyncEnumerable<PackageReference> ParseFiles(
             FilePathCollection filePaths,
-            NuGetSettings settings
+            NuGetAnalyzeSettings settings
             )
         {
             DirectoryPath? TryFindGitRoot()
@@ -93,6 +93,7 @@ namespace DPI.Commands.NuGet
                     BuildProvider.GitHubActions => settings.BuildSystem.GitHubActions.Environment.Workflow.Repository,
                     _ => gitFolder?.GetDirectoryName() ?? string.Empty
                 },
+                BuildVersion: settings.BuildVersion,
                 SessionId: Guid.NewGuid(),
                 PlatformFamily: settings.Context.Environment.Platform.Family
             );
