@@ -42,7 +42,7 @@ namespace DPI.Commands.NuGet
 
                     if (!settings.BuildSystem.IsLocalBuild)
                     {
-                        AnsiConsole.Profile.Width = 200;
+                        AnsiConsole.Profile.Width = 240;
                     }
 
                     AnsiConsole.Render(table);
@@ -55,8 +55,10 @@ namespace DPI.Commands.NuGet
                             Ansi = AnsiSupport.No,
                             ColorSystem = ColorSystemSupport.NoColors,
                             Out = writer,
-                            Interactive = InteractionSupport.No
+                            Interactive = InteractionSupport.No,
                         });
+
+                        console.Profile.Width = 240;
 
                         console.Render(table);
                     }
