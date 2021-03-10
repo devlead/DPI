@@ -108,7 +108,7 @@ Task("Clean")
                 }
             )
     )
-.Then("Integration-Tests-Tool-Analyze")
+.Then("Integration-Tests-Tool-ReportOrAnalyze")
     .Does<BuildData>(
         static (context, data) => context.DotNetCoreTool(
                 "tool",
@@ -118,7 +118,15 @@ Task("Clean")
                                                         .Append("dpi")
                                                         .Append("nuget")
                                                         .AppendSwitchQuoted("--output", "table")
-                                                        .Append("analyze"),
+                                                        .Append(
+                                                            (
+                                                                !string.IsNullOrWhiteSpace(context.EnvironmentVariable("NuGetReportSettings_SharedKey"))
+                                                                &&
+                                                                !string.IsNullOrWhiteSpace(context.EnvironmentVariable("NuGetReportSettings_WorkspaceId"))
+                                                            )
+                                                                ? "report"
+                                                                : "analyze"
+                                                            ),
                     WorkingDirectory = data.IntegrationTestPath
                 }
             )

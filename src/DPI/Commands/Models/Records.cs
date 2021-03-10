@@ -1,30 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
+using Cake.Common.Build;
 using Cake.Core.IO;
 using DPI.Helper;
 
 namespace DPI.Commands.Models
 {
     public record PackageReference(
+        [property: JsonPropertyName("sessionId")]
+        Guid SessionId,
+
+        [property: JsonPropertyName("buildProvider")] [property: JsonConverter(typeof(JsonStringEnumConverter))]
+        BuildProvider BuildProvider,
+
+        [property: JsonPropertyName("buildReference")]
+        string? BuildReference,
+
+        [property: JsonPropertyName("buildSCM")]
+        // ReSharper disable once InconsistentNaming
+        string? BuildSCM,
+
         [property: JsonPropertyName("source")] [property: JsonConverter(typeof(FilePathJsonConverter))]
-        FilePath Source,
+        FilePath? Source = null,
 
         [property: JsonPropertyName("sourceType")] [property: JsonConverter(typeof(JsonStringEnumConverter))]
-        NuGetSourceType SourceType,
+        NuGetSourceType SourceType = NuGetSourceType.Unknown,
 
         [property: JsonPropertyName("packageId")]
-        string? PackageId,
+        string? PackageId = null,
 
         [property: JsonPropertyName("version")]
-        string? Version
-    )
-    {
-        private static readonly Guid CurrentSessionId = Guid.NewGuid();
-
-        [property: JsonPropertyName("sessionId")]
-        public Guid SessionId { get; init; } = CurrentSessionId;
-    }
+        string? Version = null
+    );
 
 
     public record DotNetToolsManifest(

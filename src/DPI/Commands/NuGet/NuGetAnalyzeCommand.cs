@@ -1,10 +1,13 @@
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.XPath;
+using Cake.Common.Build;
 using Microsoft.Extensions.Logging;
 using Cake.Common.IO;
 using Cake.Core.IO;
@@ -48,19 +51,59 @@ namespace DPI.Commands.NuGet
             return 0;
         }
 
-        private async IAsyncEnumerable<PackageReference> ParseFiles(FilePathCollection filePaths,
-            NuGetAnalyzeSettings settings)
+        private async IAsyncEnumerable<PackageReference> ParseFiles(
+            FilePathCollection filePaths,
+            NuGetSettings settings
+            )
         {
+            var buildSystem = settings.Context.BuildSystem();
+            var basePackageReference = new PackageReference(
+                BuildProvider: buildSystem.Provider,
+                BuildReference: buildSystem.Provider switch
+                {
+                    BuildProvider.AppVeyor => buildSystem.AppVeyor.Environment.Build.Number.ToString(CultureInfo.InvariantCulture),
+                    BuildProvider.AzurePipelines => buildSystem.AzurePipelines.Environment.Build.Number,
+                    BuildProvider.AzurePipelinesHosted => buildSystem.AzurePipelines.Environment.Build.Number,
+                    BuildProvider.GitHubActions => buildSystem.GitHubActions.Environment.Workflow.RunNumber.ToString(CultureInfo.InvariantCulture),
+                    _=> null
+                },
+                BuildSCM: buildSystem.Provider switch
+                {
+                    BuildProvider.AppVeyor => buildSystem.AppVeyor.Environment.Repository.Name,
+                    BuildProvider.AzurePipelines => buildSystem.AzurePipelines.Environment.Repository.RepoName,
+                    BuildProvider.AzurePipelinesHosted => buildSystem.AzurePipelines.Environment.Repository.RepoName,
+                    BuildProvider.GitHubActions => string.Concat(buildSystem.GitHubActions.Environment.Workflow.RepositoryOwner, "/", buildSystem.GitHubActions.Environment.Workflow.Repository),
+                    _ => null
+                },
+                SessionId: Guid.NewGuid()
+            );
+
             foreach (var filePath in filePaths)
             {
+                var filePackageReference = basePackageReference with
+                {
+                    Source = settings.SourcePath.GetRelativePath(filePath)
+                };
                 await foreach (var package in (
                         filePath.GetFilename().FullPath,
                         Extension: filePath.GetExtension()
                     ) switch
                     {
-                        ("dotnet-tools.json", _) => ParseToolManifest(settings, filePath),
-                        ("packages.config", _) => ParsePackagesConfig(settings, filePath),
-                        (_, ".csproj") => ParseCSProj(settings, filePath),
+                        ("dotnet-tools.json", _) => ParseToolManifest(
+                            settings,
+                            filePath,
+                            filePackageReference with { SourceType = NuGetSourceType.DotNetToolsManifest }
+                            ),
+                        ("packages.config", _) => ParsePackagesConfig(
+                            settings,
+                            filePath,
+                            filePackageReference with { SourceType = NuGetSourceType.PackagesConfig }
+                        ),
+                        (_, ".csproj") => ParseCSProj(
+                            settings,
+                            filePath,
+                            filePackageReference with { SourceType = NuGetSourceType.CSProj }
+                        ),
                         _ => AsyncEnumerable.Empty<PackageReference>()
                     })
                 {
@@ -69,7 +112,11 @@ namespace DPI.Commands.NuGet
             }
         }
 
-        private async IAsyncEnumerable<PackageReference> ParseCSProj(NuGetAnalyzeSettings settings, FilePath filePath)
+        private async IAsyncEnumerable<PackageReference> ParseCSProj(
+            NuGetSettings settings,
+            FilePath filePath,
+            PackageReference basePackageReference
+            )
         {
             using (settings.Logger.BeginScope(nameof(ParseCSProj)))
             {
@@ -77,32 +124,20 @@ namespace DPI.Commands.NuGet
                 var xml = await XDocument.LoadAsync(file, LoadOptions.None, CancellationToken.None);
                 foreach (var packageReference in xml.XPathSelectElements("/Project/ItemGroup/PackageReference"))
                 {
-                    yield return GetPackageReference(
-                        settings,
-                        filePath,
-                        NuGetSourceType.CSProj,
-                        packageReference.Attribute("Include")?.Value,
-                        packageReference.Attribute("Version")?.Value
-                    );
+                    yield return basePackageReference with
+                    {
+                        PackageId = packageReference.Attribute("Include")?.Value,
+                        Version = packageReference.Attribute("Version")?.Value
+                    };
                 }
             }
         }
 
-        private static PackageReference GetPackageReference(
+        private async IAsyncEnumerable<PackageReference> ParsePackagesConfig(
             NuGetSettings settings,
             FilePath filePath,
-            NuGetSourceType nuGetSourceType, string? packageId, string? version)
-        {
-            return new(
-                settings.Context.MakeRelative(filePath, settings.SourcePath),
-                nuGetSourceType,
-                packageId,
-                version
-            );
-        }
-
-        private async IAsyncEnumerable<PackageReference> ParsePackagesConfig(NuGetAnalyzeSettings settings,
-            FilePath filePath)
+            PackageReference basePackageReference
+            )
         {
             using (settings.Logger.BeginScope(nameof(ParsePackagesConfig)))
             {
@@ -110,19 +145,20 @@ namespace DPI.Commands.NuGet
                 var xml = await XDocument.LoadAsync(file, LoadOptions.None, CancellationToken.None);
                 foreach (var package in xml.XPathSelectElements("/packages/package"))
                 {
-                    yield return GetPackageReference(
-                        settings,
-                        filePath,
-                        NuGetSourceType.PackagesConfig,
-                        package.Attribute("id")?.Value,
-                        package.Attribute("version")?.Value
-                    );
+                    yield return basePackageReference with
+                    {
+                        PackageId = package.Attribute("id")?.Value,
+                        Version = package.Attribute("version")?.Value
+                    };
                 }
             }
         }
 
-        private async IAsyncEnumerable<PackageReference> ParseToolManifest(NuGetAnalyzeSettings settings,
-            FilePath filePath)
+        private async IAsyncEnumerable<PackageReference> ParseToolManifest(
+            NuGetSettings settings,
+            FilePath filePath,
+            PackageReference basePackageReference
+            )
         {
             using (settings.Logger.BeginScope(nameof(ParseToolManifest)))
             {
@@ -136,13 +172,11 @@ namespace DPI.Commands.NuGet
 
                 foreach (var (key, value) in dotNetToolsManifest.Tools)
                 {
-                    yield return GetPackageReference(
-                        settings,
-                        filePath,
-                        NuGetSourceType.DotNetToolsManifest,
-                        key,
-                        value.Version
-                    );
+                    yield return basePackageReference with
+                    {
+                        PackageId = key,
+                        Version = value.Version
+                    };
                 }
             }
         }
