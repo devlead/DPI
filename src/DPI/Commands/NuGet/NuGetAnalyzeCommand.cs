@@ -12,7 +12,6 @@ using Microsoft.Extensions.Logging;
 using Cake.Common.IO;
 using Cake.Core.IO;
 using DPI.Commands.Models;
-using DPI.Commands.Settings;
 using DPI.Commands.Settings.NuGet;
 using Spectre.Console.Cli;
 
@@ -56,23 +55,22 @@ namespace DPI.Commands.NuGet
             NuGetSettings settings
             )
         {
-            var buildSystem = settings.Context.BuildSystem();
             var basePackageReference = new PackageReference(
-                BuildProvider: buildSystem.Provider,
-                BuildReference: buildSystem.Provider switch
+                BuildProvider: settings.BuildSystem.Provider,
+                BuildReference: settings.BuildSystem.Provider switch
                 {
-                    BuildProvider.AppVeyor => buildSystem.AppVeyor.Environment.Build.Number.ToString(CultureInfo.InvariantCulture),
-                    BuildProvider.AzurePipelines => buildSystem.AzurePipelines.Environment.Build.Number,
-                    BuildProvider.AzurePipelinesHosted => buildSystem.AzurePipelines.Environment.Build.Number,
-                    BuildProvider.GitHubActions => buildSystem.GitHubActions.Environment.Workflow.RunNumber.ToString(CultureInfo.InvariantCulture),
+                    BuildProvider.AppVeyor => settings.BuildSystem.AppVeyor.Environment.Build.Number.ToString(CultureInfo.InvariantCulture),
+                    BuildProvider.AzurePipelines => settings.BuildSystem.AzurePipelines.Environment.Build.Number,
+                    BuildProvider.AzurePipelinesHosted => settings.BuildSystem.AzurePipelines.Environment.Build.Number,
+                    BuildProvider.GitHubActions => settings.BuildSystem.GitHubActions.Environment.Workflow.RunNumber.ToString(CultureInfo.InvariantCulture),
                     _=> null
                 },
-                BuildSCM: buildSystem.Provider switch
+                BuildSCM: settings.BuildSystem.Provider switch
                 {
-                    BuildProvider.AppVeyor => buildSystem.AppVeyor.Environment.Repository.Name,
-                    BuildProvider.AzurePipelines => buildSystem.AzurePipelines.Environment.Repository.RepoName,
-                    BuildProvider.AzurePipelinesHosted => buildSystem.AzurePipelines.Environment.Repository.RepoName,
-                    BuildProvider.GitHubActions => string.Concat(buildSystem.GitHubActions.Environment.Workflow.RepositoryOwner, "/", buildSystem.GitHubActions.Environment.Workflow.Repository),
+                    BuildProvider.AppVeyor => settings.BuildSystem.AppVeyor.Environment.Repository.Name,
+                    BuildProvider.AzurePipelines => settings.BuildSystem.AzurePipelines.Environment.Repository.RepoName,
+                    BuildProvider.AzurePipelinesHosted => settings.BuildSystem.AzurePipelines.Environment.Repository.RepoName,
+                    BuildProvider.GitHubActions => settings.BuildSystem.GitHubActions.Environment.Workflow.Repository,
                     _ => null
                 },
                 SessionId: Guid.NewGuid()

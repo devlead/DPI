@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using Cake.Common.Build;
 using Cake.Common.IO;
 using Microsoft.Extensions.Logging;
 using Cake.Core;
@@ -19,6 +20,7 @@ namespace DPI.Commands.Settings.NuGet
         private DirectoryPath sourcePath;
 
         public ICakeContext Context { get; }
+        public BuildSystem BuildSystem { get; }
 
         public ILogger Logger => (
             Silent
@@ -62,6 +64,7 @@ namespace DPI.Commands.Settings.NuGet
         public NuGetSettings(ICakeContext context, ILogger logger)
         {
             Context = context;
+            BuildSystem = context.BuildSystem();
             this.logger = logger;
             sourcePath = context.Environment.WorkingDirectory;
         }
