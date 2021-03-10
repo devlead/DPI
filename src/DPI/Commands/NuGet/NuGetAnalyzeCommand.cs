@@ -55,15 +55,34 @@ namespace DPI.Commands.NuGet
             NuGetSettings settings
             )
         {
+            string TryFindGitFolder()
+            {
+                var gitDir = settings.Context.FileSystem.GetDirectory(settings.SourcePath.Combine(".git"));
+                for (var level = byte.MaxValue; level > 0; level--)
+                {
+                    if (gitDir.Exists)
+                    {
+                        return gitDir
+                            .Path.Combine("../")
+                            .Collapse()
+                            .GetDirectoryName();
+                    }
+
+                    gitDir = settings.Context.FileSystem.GetDirectory(gitDir.Path.Combine("../../.git"));
+                }
+
+                return string.Empty;
+            }
+
             var basePackageReference = new PackageReference(
                 BuildProvider: settings.BuildSystem.Provider,
-                BuildReference: settings.BuildSystem.Provider switch
+                BuildNo: settings.BuildSystem.Provider switch
                 {
                     BuildProvider.AppVeyor => settings.BuildSystem.AppVeyor.Environment.Build.Number.ToString(CultureInfo.InvariantCulture),
                     BuildProvider.AzurePipelines => settings.BuildSystem.AzurePipelines.Environment.Build.Number,
                     BuildProvider.AzurePipelinesHosted => settings.BuildSystem.AzurePipelines.Environment.Build.Number,
                     BuildProvider.GitHubActions => settings.BuildSystem.GitHubActions.Environment.Workflow.RunNumber.ToString(CultureInfo.InvariantCulture),
-                    _=> null
+                    _=> DateTime.UtcNow.ToString("yyyyMMddHHmm", CultureInfo.InvariantCulture)
                 },
                 BuildSCM: settings.BuildSystem.Provider switch
                 {
@@ -71,7 +90,7 @@ namespace DPI.Commands.NuGet
                     BuildProvider.AzurePipelines => settings.BuildSystem.AzurePipelines.Environment.Repository.RepoName,
                     BuildProvider.AzurePipelinesHosted => settings.BuildSystem.AzurePipelines.Environment.Repository.RepoName,
                     BuildProvider.GitHubActions => settings.BuildSystem.GitHubActions.Environment.Workflow.Repository,
-                    _ => null
+                    _ => TryFindGitFolder()
                 },
                 SessionId: Guid.NewGuid(),
                 PlatformFamily: settings.Context.Environment.Platform.Family

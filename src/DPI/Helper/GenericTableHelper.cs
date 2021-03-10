@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
@@ -16,7 +17,12 @@ namespace DPI.Helper
                     BindingFlags.GetProperty
                     | BindingFlags.Public
                     | BindingFlags.Instance
-                );
+                ).Where(
+                    property => property
+                                    .GetCustomAttributes(typeof(BrowsableAttribute)).Cast<BrowsableAttribute>()
+                                    .FirstOrDefault()?.Browsable ?? true
+                    )
+                .ToArray();
 
             var table = new Table()
                             .AddColumns(properties.Select(property => property.Name).ToArray());

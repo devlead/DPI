@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using Cake.Common.Build;
 using Cake.Core;
@@ -18,8 +20,8 @@ namespace DPI.Commands.Models
         [property: JsonPropertyName("platformFamily")] [property: JsonConverter(typeof(JsonStringEnumConverter))]
         PlatformFamily PlatformFamily,
 
-        [property: JsonPropertyName("buildReference")]
-        string? BuildReference,
+        [property: JsonPropertyName("buildNo")]
+        string? BuildNo,
 
         [property: JsonPropertyName("buildSCM")]
         // ReSharper disable once InconsistentNaming
@@ -38,8 +40,13 @@ namespace DPI.Commands.Models
         string? Version = null
     )
     {
-        [property: JsonPropertyName("timestamp")]
+        [JsonPropertyName("timestamp")]
+        [Browsable(false)]
         public DateTimeOffset TimeStamp { get; } = DateTimeOffset.UtcNow;
+
+        [JsonPropertyName("Computer")]
+        [Browsable(false)]
+        public string Computer { get; } = Environment.MachineName;
     }
 
 
