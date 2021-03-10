@@ -1,21 +1,24 @@
 # Icon License
 
-Icon is not MIT licensed
-
 March 10, 2021
+*Icon is not MIT licensed*
 
-ROYALTY–FREE LICENSE
+## ROYALTY–FREE LICENSE
+
 Image: “investigation Icon #2048220”
 Purchased from Noun Project
 
-LICENSEE
+## LICENSEE
+
 Mattias Karlsson
 
-LICENSOR
+## LICENSOR
+
 The Noun Project, Inc.
 
-On behalf of
+## On behalf of
+
 [Made](https://thenounproject.com/elki)
 
-This license grants its holder perpetual, non-exclusive, worldwide rights to unlimited use of the licensed
+This license grants its **holder** perpetual, non-exclusive, worldwide rights to unlimited use of the licensed
 image, as covered by Noun Project's Terms of Use ([thenounproject.com/legal](https://thenounproject.com/legal/)).
