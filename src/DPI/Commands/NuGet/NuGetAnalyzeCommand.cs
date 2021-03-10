@@ -81,7 +81,7 @@ namespace DPI.Commands.NuGet
                     BuildProvider.AppVeyor => settings.BuildSystem.AppVeyor.Environment.Build.Number.ToString(CultureInfo.InvariantCulture),
                     BuildProvider.AzurePipelines => settings.BuildSystem.AzurePipelines.Environment.Build.Number,
                     BuildProvider.AzurePipelinesHosted => settings.BuildSystem.AzurePipelines.Environment.Build.Number,
-                    BuildProvider.GitHubActions => settings.BuildSystem.GitHubActions.Environment.Workflow.RunId,
+                    BuildProvider.GitHubActions => FormattableString.Invariant($"{settings.BuildSystem.GitHubActions.Environment.Workflow.RunId}-{settings.BuildSystem.GitHubActions.Environment.Workflow.RunNumber}"),
                     _=> DateTime.UtcNow.ToString("yyyyMMddHHmm", CultureInfo.InvariantCulture)
                 },
                 BuildSCM: settings.BuildSystem.Provider switch
