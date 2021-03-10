@@ -1,0 +1,10 @@
+<Project>
+ <PropertyGroup>
+   <CakeVersion>1.1.0</CakeVersion>
+   <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+ </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="../cake-contrib-medium.png" Pack="true" PackagePath=""/>
+  </ItemGroup>
+</Project>

@@ -55,7 +55,7 @@ namespace DPI.Commands.NuGet
             NuGetSettings settings
             )
         {
-            string TryFindGitFolder()
+            DirectoryPath? TryFindGitRoot()
             {
                 var gitDir = settings.Context.FileSystem.GetDirectory(settings.SourcePath.Combine(".git"));
                 for (var level = byte.MaxValue; level > 0; level--)
@@ -64,15 +64,16 @@ namespace DPI.Commands.NuGet
                     {
                         return gitDir
                             .Path.Combine("../")
-                            .Collapse()
-                            .GetDirectoryName();
+                            .Collapse();
                     }
 
                     gitDir = settings.Context.FileSystem.GetDirectory(gitDir.Path.Combine("../../.git"));
                 }
 
-                return string.Empty;
+                return null;
             }
+
+            var gitFolder = TryFindGitRoot();
 
             var basePackageReference = new PackageReference(
                 BuildProvider: settings.BuildSystem.Provider,
@@ -90,7 +91,7 @@ namespace DPI.Commands.NuGet
                     BuildProvider.AzurePipelines => settings.BuildSystem.AzurePipelines.Environment.Repository.RepoName,
                     BuildProvider.AzurePipelinesHosted => settings.BuildSystem.AzurePipelines.Environment.Repository.RepoName,
                     BuildProvider.GitHubActions => settings.BuildSystem.GitHubActions.Environment.Workflow.Repository,
-                    _ => TryFindGitFolder()
+                    _ => gitFolder?.GetDirectoryName() ?? string.Empty
                 },
                 SessionId: Guid.NewGuid(),
                 PlatformFamily: settings.Context.Environment.Platform.Family
@@ -120,6 +121,7 @@ namespace DPI.Commands.NuGet
                         (_, ".csproj") => ParseCSProj(
                             settings,
                             filePath,
+                            gitFolder,
                             filePackageReference with { SourceType = NuGetSourceType.CSProj }
                         ),
                         _ => AsyncEnumerable.Empty<PackageReference>()
@@ -133,19 +135,92 @@ namespace DPI.Commands.NuGet
         private async IAsyncEnumerable<PackageReference> ParseCSProj(
             NuGetSettings settings,
             FilePath filePath,
+            DirectoryPath? gitRootPath,
             PackageReference basePackageReference
             )
         {
+            static async Task<ILookup<string, string>> TryFindDirectoryProps(
+                NuGetSettings settings,
+                FilePath csprojPath,
+                DirectoryPath? gitRootPath
+                )
+            {
+                static async Task<(string key, string value)[]> ParseMsBuildProperties(NuGetSettings settings, FilePath? msBuildXmlPath)
+                {
+                    if (msBuildXmlPath == null || !settings.Context.FileExists(msBuildXmlPath))
+                    {
+                        return Array.Empty<(string key, string value)>();
+                    }
+
+                    await using var directoryBuildPropsFile = settings.Context.FileSystem.GetFile(msBuildXmlPath).OpenRead();
+                    var directoryBuildPropsXml =
+                        await XDocument.LoadAsync(directoryBuildPropsFile, LoadOptions.None, CancellationToken.None);
+
+                    var properties = directoryBuildPropsXml
+                        .XPathSelectElements("/Project/PropertyGroup/*")
+                        .Select(element => (key: element.Name.LocalName, value: element.Value))
+                        .ToArray();
+                    return properties;
+                }
+
+                var csprojProperties = await ParseMsBuildProperties(settings, csprojPath);
+                var currentDirectory = settings.Context.MakeAbsolute(csprojPath.GetDirectory()).Collapse();
+                var stopDir = gitRootPath is {}
+                    ? settings.Context.MakeAbsolute(gitRootPath.Combine("../")).Collapse()
+                    : null;
+                FilePath? directoryBuildPropsPath = null;
+
+                for (
+                    var level = byte.MaxValue
+                    ; level > 0
+                      && currentDirectory.FullPath!=string.Empty
+                      && currentDirectory.FullPath != stopDir?.FullPath
+                    ; level--
+                    )
+                {
+                    directoryBuildPropsPath = currentDirectory.CombineWithFilePath("Directory.Build.props");
+
+                    if (settings.Context.FileExists(directoryBuildPropsPath))
+                    {
+                        break;
+                    }
+
+                    currentDirectory = currentDirectory.Combine("../").Collapse();
+                }
+               
+                var propsProperties = await ParseMsBuildProperties(settings, directoryBuildPropsPath);
+                var csprojPropertiesLookup = csprojProperties.ToLookup(
+                    key => key.key,
+                    value => value.value,
+                    StringComparer.OrdinalIgnoreCase
+                );
+
+                return csprojProperties.
+                    Union(
+                        propsProperties
+                    .Where(key => !csprojPropertiesLookup[key.key].Any())
+                    )
+                    .ToLookup(
+                    key => string.Concat("$(", key.key,")"),
+                    value => value.value,
+                    StringComparer.OrdinalIgnoreCase
+                );
+            }
+
             using (settings.Logger.BeginScope(nameof(ParseCSProj)))
             {
+                var propertiesLookup = await TryFindDirectoryProps(settings, filePath, gitRootPath);
+        
                 await using var file = settings.Context.FileSystem.GetFile(filePath).OpenRead();
                 var xml = await XDocument.LoadAsync(file, LoadOptions.None, CancellationToken.None);
                 foreach (var packageReference in xml.XPathSelectElements("/Project/ItemGroup/PackageReference"))
                 {
+                    var packageId = packageReference.Attribute("Include")?.Value;
+                    var version = packageReference.Attribute("Version")?.Value ?? string.Empty;
                     yield return basePackageReference with
                     {
-                        PackageId = packageReference.Attribute("Include")?.Value,
-                        Version = packageReference.Attribute("Version")?.Value
+                        PackageId = packageId,
+                        Version = propertiesLookup[version].FirstOrDefault() ?? version
                     };
                 }
             }
