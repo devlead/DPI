@@ -6,6 +6,7 @@
         Unknown,
         CSProj,
         PackagesConfig,
-        DotNetToolsManifest
+        DotNetToolsManifest,
+        ProjectAssets
     }
 }

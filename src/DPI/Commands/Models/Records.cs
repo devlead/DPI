@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 using Cake.Common.Build;
 using Cake.Core;
@@ -36,6 +35,9 @@ namespace DPI.Commands.Models
         [property: JsonPropertyName("sourceType")] [property: JsonConverter(typeof(JsonStringEnumConverter))]
         NuGetSourceType SourceType = NuGetSourceType.Unknown,
 
+        [property: JsonPropertyName("targetFramework")]
+        string? TargetFramework = null,
+
         [property: JsonPropertyName("packageId")]
         string? PackageId = null,
 
@@ -62,5 +64,15 @@ namespace DPI.Commands.Models
         [property: JsonPropertyName("version")] string Version,
         // ReSharper disable once SuggestBaseTypeForParameter
         [property: JsonPropertyName("commands")] string[] Commands
+    );
+
+    public record ProjectAssets(
+        [property: JsonPropertyName("version")] int Version,
+        [property: JsonPropertyName("targets")] Dictionary<string, Dictionary<string, ProjectAsset>> Targets
+
+    );
+
+    public record ProjectAsset(
+        [property: JsonPropertyName("type")] string Type
     );
 }
