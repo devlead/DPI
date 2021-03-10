@@ -4,6 +4,7 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
     <Nullable>enable</Nullable>
+    <PackageIcon>icon/dpi.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,4 +21,8 @@
     <PackageReference Include="System.Linq.Async" Version="5.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+     <None Include="../../icon/LICENSE.md" Pack="true" PackagePath="icon"/>
+     <None Include="../../icon/dpi.png" Pack="true" PackagePath="icon"/>
+  </ItemGroup>
 </Project>
