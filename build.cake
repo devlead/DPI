@@ -117,6 +117,7 @@ Task("Clean")
                                                         .Append("run")
                                                         .Append("dpi")
                                                         .Append("nuget")
+                                                        .Append("../../../")
                                                         .AppendSwitchQuoted("--output", "table")
                                                         .Append(
                                                             (
@@ -163,6 +164,8 @@ Task("Clean")
                     data.Version
                     )
             );
+
+            context.Information("Validated version {0}", data.Version);
         }
     )
 .Then("Integration-Tests")
