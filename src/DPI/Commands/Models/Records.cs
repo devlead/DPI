@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Cake.Common.Build;
+using Cake.Core;
 using Cake.Core.IO;
 using DPI.Helper;
 
@@ -11,8 +12,13 @@ namespace DPI.Commands.Models
         [property: JsonPropertyName("sessionId")]
         Guid SessionId,
 
-        [property: JsonPropertyName("buildProvider")] [property: JsonConverter(typeof(JsonStringEnumConverter))]
+        [property: JsonPropertyName("buildProvider")]
+        [property: JsonConverter(typeof(JsonStringEnumConverter))]
         BuildProvider BuildProvider,
+
+        [property: JsonPropertyName("platformFamily")]
+        [property: JsonConverter(typeof(JsonStringEnumConverter))]
+        PlatformFamily PlatformFamily,
 
         [property: JsonPropertyName("buildReference")]
         string? BuildReference,

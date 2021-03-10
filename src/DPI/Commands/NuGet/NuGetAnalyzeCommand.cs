@@ -73,9 +73,10 @@ namespace DPI.Commands.NuGet
                     BuildProvider.GitHubActions => settings.BuildSystem.GitHubActions.Environment.Workflow.Repository,
                     _ => null
                 },
-                SessionId: Guid.NewGuid()
+                SessionId: Guid.NewGuid(),
+                PlatformFamily: settings.Context.Environment.Platform.Family
             );
-
+            
             foreach (var filePath in filePaths)
             {
                 var filePackageReference = basePackageReference with

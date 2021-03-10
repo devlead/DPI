@@ -40,6 +40,11 @@ namespace DPI.Commands.NuGet
                     
                     var table = results.AsTable();
 
+                    if (!settings.BuildSystem.IsLocalBuild)
+                    {
+                        AnsiConsole.Profile.Width = 200;
+                    }
+
                     AnsiConsole.Render(table);
 
                     if (fileStream != null)
