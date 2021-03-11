@@ -1,39 +1,47 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Text.Json.Serialization;
 using Cake.Common.Build;
 using Cake.Core;
 using Cake.Core.IO;
+using DPI.Commands.Attributes;
 using DPI.Helper;
 
 namespace DPI.Commands.Models
 {
     public record PackageReference(
+        [property: TableGroup]
         [property: JsonPropertyName("sessionId")]
         Guid SessionId,
 
+        [property: TableGroup]
         [property: JsonPropertyName("buildProvider")] [property: JsonConverter(typeof(JsonStringEnumConverter))]
         BuildProvider BuildProvider,
 
+        [property: TableGroup]
         [property: JsonPropertyName("platformFamily")] [property: JsonConverter(typeof(JsonStringEnumConverter))]
         PlatformFamily PlatformFamily,
 
+        [property: TableGroup]
         [property: JsonPropertyName("buildNo")]
         string? BuildNo,
 
+        [property: TableGroup]
         [property: JsonPropertyName("buildSCM")]
         // ReSharper disable once InconsistentNaming
         string? BuildSCM,
 
+        [property: TableGroup]
         [property: JsonPropertyName("buildVersion")]
         string? BuildVersion,
 
-        [property: JsonPropertyName("source")] [property: JsonConverter(typeof(FilePathJsonConverter))]
-        FilePath? Source = null,
-
+        [property: TableGroupTitle]
         [property: JsonPropertyName("sourceType")] [property: JsonConverter(typeof(JsonStringEnumConverter))]
         NuGetSourceType SourceType = NuGetSourceType.Unknown,
+
+        [property: TableGroupTitle]
+        [property: JsonPropertyName("source")] [property: JsonConverter(typeof(FilePathJsonConverter))]
+        FilePath? Source = null,
 
         [property: JsonPropertyName("targetFramework")]
         string? TargetFramework = null,
@@ -45,12 +53,12 @@ namespace DPI.Commands.Models
         string? Version = null
     )
     {
+        [TableHidden]
         [JsonPropertyName("timestamp")]
-        [Browsable(false)]
         public DateTimeOffset TimeStamp { get; } = DateTimeOffset.UtcNow;
 
+        [TableHidden]
         [JsonPropertyName("Computer")]
-        [Browsable(false)]
         public string Computer { get; } = Environment.MachineName;
     }
 

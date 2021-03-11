@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-     <None Include="../../icon/LICENSE.md" Pack="true" PackagePath="icon"/>
-     <None Include="../../icon/dpi.png" Pack="true" PackagePath="icon"/>
+     <None Include="../../icon/LICENSE.md" Pack="true" PackagePath="icon" />
+     <None Include="../../icon/dpi.png" Pack="true" PackagePath="icon" />
   </ItemGroup>
 </Project>
