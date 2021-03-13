@@ -9,7 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="Spectre.Console" Version="0.38.0" />
-    <PackageReference Include="Spectre.Cli.Extensions.DependencyInjection" Version="0.3.1-preview.0.1" />
+    <PackageReference Include="Spectre.Cli.Extensions.DependencyInjection" Version="0.4.0" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="5.0.0" />
@@ -17,7 +17,7 @@
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
     <PackageReference Include="Cake.Core" Version="1.1.0" />
     <PackageReference Include="Cake.Common" Version="1.1.0" />
-    <PackageReference Include="Cake.Bridge.DependencyInjection" Version="0.4.0" />
+    <PackageReference Include="Cake.Bridge.DependencyInjection" Version="0.5.0" />
     <PackageReference Include="System.Linq.Async" Version="5.0.0" />
   </ItemGroup>
 
