@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Cake.Core.IO;
-using DPI.Commands.Models;
+using DPI.Models;
 using DPI.Commands.Settings.NuGet;
 using DPI.Helper;
 using Microsoft.Extensions.Logging;

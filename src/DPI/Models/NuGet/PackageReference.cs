@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using Cake.Common.Build;
 using Cake.Core;
 using Cake.Core.IO;
-using DPI.Commands.Attributes;
+using DPI.Attributes;
 using DPI.Helper;
 
-namespace DPI.Commands.Models
+namespace DPI.Models.NuGet
 {
     public record PackageReference(
         [property: TableGroup]
@@ -61,26 +60,4 @@ namespace DPI.Commands.Models
         [JsonPropertyName("Computer")]
         public string Computer { get; } = Environment.MachineName;
     }
-
-
-    public record DotNetToolsManifest(
-        [property: JsonPropertyName("version")] int Version,
-        [property: JsonPropertyName("isRoot")] bool IsRoot,
-        [property: JsonPropertyName("tools")] Dictionary<string, DotNetTool> Tools);
-
-    public record DotNetTool(
-        [property: JsonPropertyName("version")] string Version,
-        // ReSharper disable once SuggestBaseTypeForParameter
-        [property: JsonPropertyName("commands")] string[] Commands
-    );
-
-    public record ProjectAssets(
-        [property: JsonPropertyName("version")] int Version,
-        [property: JsonPropertyName("targets")] Dictionary<string, Dictionary<string, ProjectAsset>> Targets
-
-    );
-
-    public record ProjectAsset(
-        [property: JsonPropertyName("type")] string Type
-    );
 }

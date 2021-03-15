@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 using Cake.Bridge.DependencyInjection;
 using DPI.Commands.NuGet;
 using DPI.Commands.Settings.NuGet;
+using DPI.Parsers.NuGet;
 using Spectre.Console.Cli;
 using Spectre.Cli.Extensions.DependencyInjection;
 
@@ -27,6 +28,9 @@ var serviceCollection = new ServiceCollection()
                     .Build()
             ))
     .AddHttpClient()
+    .AddSingleton<CsProjParser>()
+    .AddSingleton<DotNetToolsManifestParser>()
+    .AddSingleton<PackageConfigParser>()
     .AddCakeCore();
 
 using var registrar = new DependencyInjectionRegistrar(serviceCollection);

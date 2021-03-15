@@ -1,4 +1,4 @@
-﻿namespace DPI.Commands.Models
+﻿namespace DPI.Models.NuGet
 {
     public enum NuGetSourceType
     {

@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using DPI.Commands.Attributes;
+using DPI.Attributes;
+using DPI.Models;
 using Spectre.Console;
 
 namespace DPI.Helper
@@ -151,64 +152,6 @@ namespace DPI.Helper
             }
 
             return masterTable;
-        }
-    }
-
-    public record GroupProperty(string Name, string Value, bool IsTitle);
-
-    public class PropertyValueGrouper : IEqualityComparer<GroupProperty[]>,
-        IEqualityComparer<GroupProperty>
-    {
-        public static PropertyValueGrouper Default { get; }= new();
-
-        bool IEqualityComparer<GroupProperty[]>.Equals(GroupProperty[]? x, GroupProperty[]? y)
-        {
-            if (x is null && y is null)
-            {
-                return true;
-            }
-
-            if (x is null || y is null)
-            {
-                return false;
-            }
-
-            if (ReferenceEquals(x, y))
-            {
-                return true;
-            }
-
-
-            return x.SequenceEqual(
-                y,
-                this
-            );
-        }
-
-        int IEqualityComparer<GroupProperty[]>.GetHashCode(GroupProperty[] obj)
-        {
-            return obj.Aggregate(
-                0,
-                (current, item) => HashCode.Combine(
-                    current,
-                    StringComparer.OrdinalIgnoreCase.GetHashCode(item.Name),
-                    StringComparer.OrdinalIgnoreCase.GetHashCode(item.Value)
-                )
-            );
-        }
-
-        bool IEqualityComparer<GroupProperty>.Equals(GroupProperty? x, GroupProperty? y)
-        {
-            return StringComparer.OrdinalIgnoreCase.Equals(x?.Name, y?.Name) &&
-                   StringComparer.OrdinalIgnoreCase.Equals(x?.Value, y?.Value);
-        }
-
-        int IEqualityComparer<GroupProperty>.GetHashCode(GroupProperty obj)
-        {
-            return HashCode.Combine(
-                obj.Name.GetHashCode(),
-                obj.Value.GetHashCode()
-            );
         }
     }
 }

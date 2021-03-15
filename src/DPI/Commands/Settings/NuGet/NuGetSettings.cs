@@ -1,11 +1,10 @@
-using System;
 using System.ComponentModel;
 using Cake.Common.Build;
 using Cake.Common.IO;
 using Microsoft.Extensions.Logging;
 using Cake.Core;
 using Cake.Core.IO;
-using DPI.Commands.Models;
+using DPI.Models;
 using DPI.Helper;
 using DPI.Commands.Settings.Validation;
 using Microsoft.Extensions.Logging.Abstractions;

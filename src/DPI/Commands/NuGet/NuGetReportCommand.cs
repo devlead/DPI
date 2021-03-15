@@ -9,6 +9,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using DPI.Commands.Settings.NuGet;
+using DPI.Parsers.NuGet;
 using Microsoft.Extensions.Logging;
 using static System.FormattableString;
 
@@ -88,6 +89,18 @@ namespace DPI.Commands.NuGet
             var bytes = Encoding.UTF8.GetBytes(message);
             using var hmacSha256 = new HMACSHA256(Convert.FromBase64String(settings.SharedKey));
             return Invariant($"SharedKey {settings.WorkspaceId}:{Convert.ToBase64String(hmacSha256.ComputeHash(bytes))}");
+        }
+
+        public NuGetReportCommand(
+            CsProjParser csProjParser,
+            DotNetToolsManifestParser dotNetToolsManifestParser,
+            PackageConfigParser packageConfigParser
+            ) : base(
+            csProjParser,
+            dotNetToolsManifestParser,
+            packageConfigParser
+            )
+        {
         }
     }
 }
