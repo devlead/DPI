@@ -91,15 +91,8 @@ namespace DPI.Commands.NuGet
             return Invariant($"SharedKey {settings.WorkspaceId}:{Convert.ToBase64String(hmacSha256.ComputeHash(bytes))}");
         }
 
-        public NuGetReportCommand(
-            CsProjParser csProjParser,
-            DotNetToolsManifestParser dotNetToolsManifestParser,
-            PackageConfigParser packageConfigParser
-            ) : base(
-            csProjParser,
-            dotNetToolsManifestParser,
-            packageConfigParser
-            )
+        public NuGetReportCommand(NuGetParsers nuGetParsers)
+            : base(nuGetParsers)
         {
         }
     }

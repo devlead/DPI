@@ -31,6 +31,8 @@ var serviceCollection = new ServiceCollection()
     .AddSingleton<CsProjParser>()
     .AddSingleton<DotNetToolsManifestParser>()
     .AddSingleton<PackageConfigParser>()
+    .AddSingleton<CakeParser>()
+    .AddSingleton<NuGetParsers>()
     .AddCakeCore();
 
 using var registrar = new DependencyInjectionRegistrar(serviceCollection);

@@ -17,10 +17,9 @@ namespace DPI.Commands.NuGet
     // ReSharper disable once ClassNeverInstantiated.Global
     public class NuGetAnalyzeCommand<TSettings> : NuGetCommand<TSettings> where TSettings : NuGetAnalyzeSettings
     {
-        private const string NuGetPackagesFilePattern = "{.csproj,dotnet-tools.json,packages.config}";
-        private INuGetPackageReferenceParser CsProjParser { get; }
-        private INuGetPackageReferenceParser DotNetToolsManifestParser { get; }
-        private INuGetPackageReferenceParser PackageConfigParser { get; }
+        private const string NuGetPackagesFilePattern = "{.csproj,dotnet-tools.json,packages.config,.cake}";
+
+        private NuGetParsers NuGetParsers { get; }
        
         public override async Task<int> ExecuteAsync(CommandContext context, TSettings settings)
         {
@@ -51,14 +50,10 @@ namespace DPI.Commands.NuGet
         }
 
         public NuGetAnalyzeCommand(
-            CsProjParser csProjParser,
-            DotNetToolsManifestParser dotNetToolsManifestParser,
-            PackageConfigParser packageConfigParser
+            NuGetParsers nuGetParsers
             )
         {
-            CsProjParser = csProjParser;
-            DotNetToolsManifestParser = dotNetToolsManifestParser;
-            PackageConfigParser = packageConfigParser;
+            NuGetParsers = nuGetParsers;
         }
 
         private async IAsyncEnumerable<PackageReference> ParseFiles(
@@ -121,19 +116,25 @@ namespace DPI.Commands.NuGet
                         Extension: filePath.GetExtension()
                     ) switch
                     {
-                        ("dotnet-tools.json", _) => DotNetToolsManifestParser.Parse(
+                        ("dotnet-tools.json", _) => NuGetParsers.DotNetToolsManifestParser.Parse(
                             settings,
                             filePath,
                             gitFolder,
                             filePackageReference
                             ),
-                        ("packages.config", _) => PackageConfigParser.Parse(
+                        ("packages.config", _) => NuGetParsers.PackageConfigParser.Parse(
                             settings,
                             filePath,
                             gitFolder,
                             filePackageReference
                         ),
-                        (_, ".csproj") => CsProjParser.Parse(
+                        (_, ".csproj") => NuGetParsers.CsProjParser.Parse(
+                            settings,
+                            filePath,
+                            gitFolder,
+                            filePackageReference
+                        ),
+                        (_, ".cake") => NuGetParsers.CakeParser.Parse(
                             settings,
                             filePath,
                             gitFolder,

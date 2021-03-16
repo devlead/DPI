@@ -7,6 +7,7 @@
         CSProj,
         PackagesConfig,
         DotNetToolsManifest,
-        ProjectAssets
+        ProjectAssets,
+        Cake
     }
 }
