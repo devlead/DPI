@@ -2,13 +2,15 @@
 
 Dependency Inventory .NET Tool - Inventories dependencies and reports to Azure Log Analytics
 
+You can get introduction to the tool, in the blog post: [Introducing DPI - A DevOps tool to inspect dependencies and report to Azure Log Analytics](https://www.devlead.se/posts/2021/2021-03-20-introducing-dpi)
+
 ## Obtain
 
 `dotnet tool install -g dpi`
 
 ## Commands
 
-Use `-h` / `--help` to get current list of available commands and options. 
+Use `-h` / `--help` to get current list of available commands and options.
 
 ```bash
 dpi --help
