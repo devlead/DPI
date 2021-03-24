@@ -33,7 +33,15 @@ namespace DPI.Parsers.NuGet
                         yield return basePackageReference with
                         {
                             SourceType = SourceType,
-                            TargetFramework = targetFramework,
+                            TargetFramework = targetFramework switch
+                            {
+                                ".NETCoreApp,Version=v2.0" => "netcoreapp2.0",
+                                ".NETCoreApp,Version=v2.1" => "netcoreapp2.1",
+                                ".NETCoreApp,Version=v2.2" => "netcoreapp2.2",
+                                ".NETCoreApp,Version=v3.0" => "netcoreapp3.0",
+                                ".NETCoreApp,Version=v3.1" => "netcoreapp3.1",
+                                _ => targetFramework
+                            },
                             PackageId = System.IO.Path.GetDirectoryName(package),
                             Version = System.IO.Path.GetFileName(package)
                         };
