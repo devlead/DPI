@@ -9,6 +9,8 @@ using Cake.Common.IO;
 using Cake.Core.IO;
 using DPI.Models.NuGet;
 using DPI.Commands.Settings.NuGet;
+using DPI.Models;
+using DPI.OutputConverters;
 using DPI.Parsers.NuGet;
 using Spectre.Console.Cli;
 
@@ -50,8 +52,9 @@ namespace DPI.Commands.NuGet
         }
 
         public NuGetAnalyzeCommand(
-            NuGetParsers nuGetParsers
-            )
+            NuGetParsers nuGetParsers,
+            ILookup<OutputFormat, IOutputConverter> outputConverterLookup
+            ) : base(outputConverterLookup)
         {
             NuGetParsers = nuGetParsers;
         }

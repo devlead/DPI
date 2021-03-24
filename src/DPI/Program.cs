@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Memory;
 using Microsoft.Extensions.DependencyInjection;
@@ -6,6 +7,8 @@ using Microsoft.Extensions.Logging;
 using Cake.Bridge.DependencyInjection;
 using DPI.Commands.NuGet;
 using DPI.Commands.Settings.NuGet;
+using DPI.Models;
+using DPI.OutputConverters;
 using DPI.Parsers.NuGet;
 using Spectre.Console.Cli;
 using Spectre.Cli.Extensions.DependencyInjection;
@@ -34,6 +37,9 @@ var serviceCollection = new ServiceCollection()
     .AddSingleton<CakeParser>()
     .AddSingleton<NuGetParsers>()
     .AddSingleton<ProjectsAssetsParser>()
+    .AddSingleton<IOutputConverter, JsonOutputConverter>()
+    .AddSingleton<IOutputConverter, TableOutputConverter>()
+    .AddSingleton<ILookup<OutputFormat, IOutputConverter>, OutputConverterLookup>()
     .AddCakeCore();
 
 using var registrar = new DependencyInjectionRegistrar(serviceCollection);

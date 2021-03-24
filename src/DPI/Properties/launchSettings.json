@@ -2,7 +2,7 @@
   "profiles": {
     "DPI": {
       "commandName": "Project",
-      "commandLineArgs": "nuget \"..\\..\\..\\..\\..\" --output table analyze"
+      "commandLineArgs": "nuget \"..\\..\\..\\..\\..\" --output json analyze"
     }
   }
 }
