@@ -83,6 +83,15 @@ Task("Clean")
             }
         )
     )
+.Then("Integration-Tests-Restore-MultiTarget")
+    .Does<BuildData>(
+        static (context, data) => context.DotNetCoreRestore(
+            "./resources/src/MultiTarget/MultiTarget.csproj",
+            new DotNetCoreRestoreSettings {
+                MSBuildSettings = data.MSBuildSettings
+            }
+        )
+    )
 .Then("Integration-Tests-Tool-Manifest")
     .Does<BuildData>(
         static (context, data) => context.DotNetCoreTool(
