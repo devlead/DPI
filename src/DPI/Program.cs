@@ -33,6 +33,7 @@ var serviceCollection = new ServiceCollection()
     .AddSingleton<PackageConfigParser>()
     .AddSingleton<CakeParser>()
     .AddSingleton<NuGetParsers>()
+    .AddSingleton<ProjectsAssetsParser>()
     .AddCakeCore();
 
 using var registrar = new DependencyInjectionRegistrar(serviceCollection);

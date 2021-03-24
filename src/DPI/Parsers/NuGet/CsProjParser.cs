@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -15,7 +14,14 @@ namespace DPI.Parsers.NuGet
 {
     public class CsProjParser : INuGetPackageReferenceParser
     {
+        private static readonly string[] NoFrameWorks = new[] { string.Empty };
         public NuGetSourceType SourceType { get; } = NuGetSourceType.CSProj;
+        private ProjectsAssetsParser ProjectsAssetsParser { get; }
+
+        public CsProjParser(ProjectsAssetsParser projectsAssetsParser)
+        {
+            ProjectsAssetsParser = projectsAssetsParser;
+        }
 
         public async IAsyncEnumerable<PackageReference> Parse(
             NuGetSettings settings,
@@ -33,10 +39,11 @@ namespace DPI.Parsers.NuGet
 
                 if (settings.Context.FileExists(projectAssetsPath))
                 {
-                    var packageReferences = ParseProjectAssets(
+                    var packageReferences = ProjectsAssetsParser.Parse(
                         settings,
                         projectAssetsPath,
-                        basePackageReference with { SourceType = NuGetSourceType.ProjectAssets }
+                        repoRootPath,
+                        basePackageReference
                     );
 
                     var found = false;
@@ -52,55 +59,37 @@ namespace DPI.Parsers.NuGet
                     }
                 }
 
-
-
                 var propertiesLookup = await TryFindDirectoryProps(settings, filePath, repoRootPath);
-                var targetFrameWork = propertiesLookup["$(TargetFramework)"].FirstOrDefault()
-                                      ??
-                                      propertiesLookup["$(TargetFrameworks)"].FirstOrDefault();
+                var targetFrameWorks = (
+                    propertiesLookup["$(TargetFramework)"].FirstOrDefault()
+                    ??
+                    propertiesLookup["$(TargetFrameworks)"].FirstOrDefault()
+                    ??
+                    string.Empty
+                ).Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+                if (targetFrameWorks.Length < 1)
+                {
+                    targetFrameWorks = NoFrameWorks;
+                }
 
                 await using var file = settings.Context.FileSystem.GetFile(filePath).OpenRead();
                 var xml = await XDocument.LoadAsync(file, LoadOptions.None, CancellationToken.None);
                 foreach (var packageReference in xml.XPathSelectElements("/Project/ItemGroup/PackageReference"))
                 {
                     var packageId = packageReference.Attribute("Include")?.Value;
-                    var version = packageReference.Attribute("Version")?.Value ?? string.Empty;
-                    yield return basePackageReference with
+                    var version = packageReference.Attribute("Version")?.Value
+                                  ?? packageReference.Element("Version")?.Value
+                                  ?? string.Empty;
+
+                    foreach (var targetFrameWork in targetFrameWorks)
                     {
-                        SourceType = SourceType,
-                        TargetFramework = targetFrameWork,
-                        PackageId = packageId,
-                        Version = propertiesLookup[version].FirstOrDefault() ?? version
-                    };
-                }
-            }
-        }
-
-        private static async IAsyncEnumerable<PackageReference> ParseProjectAssets(
-            NuGetSettings settings,
-            FilePath filePath,
-            PackageReference packageReference
-        )
-        {
-            using (settings.Logger.BeginScope(nameof(ParseProjectAssets)))
-            {
-                await using var file = settings.Context.FileSystem.GetFile(filePath).OpenRead();
-                var projectAssets = await JsonSerializer.DeserializeAsync<ProjectAssets>(file);
-
-                if (projectAssets == null)
-                {
-                    yield break;
-                }
-
-                foreach (var (targetFramework, targets) in projectAssets.Targets)
-                {
-                    foreach (var (package, _) in targets)
-                    {
-                        yield return packageReference with
+                        yield return basePackageReference with
                         {
-                            TargetFramework = targetFramework,
-                            PackageId = System.IO.Path.GetDirectoryName(package),
-                            Version = System.IO.Path.GetFileName(package)
+                            SourceType = SourceType,
+                            TargetFramework = targetFrameWork,
+                            PackageId = packageId,
+                            Version = propertiesLookup[version].FirstOrDefault() ?? version
                         };
                     }
                 }
