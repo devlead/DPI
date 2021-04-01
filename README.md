@@ -16,6 +16,29 @@ Use `-h` / `--help` to get current list of available commands and options.
 dpi --help
 ```
 
+Result:
+
+<!-- snippet: IntegrationTest.Run_args=--help.verified.txt -->
+<a id='snippet-IntegrationTest.Run_args=--help.verified.txt'></a>
+```txt
+USAGE:
+    dpi [OPTIONS] <COMMAND>
+
+EXAMPLES:
+    dpi nuget <SourcePath> analyze
+    dpi nuget <SourcePath> report
+
+OPTIONS:
+    -h, --help       Prints help information   
+    -v, --version    Prints version information
+                                               
+COMMANDS:
+    nuget    NuGet dependency commands
+```
+<sup><a href='/src/Tests/IntegrationTest.Run_args=--help.verified.txt#L1-L14' title='Snippet source file'>snippet source</a> | <a href='#snippet-IntegrationTest.Run_args=--help.verified.txt' title='Start of snippet'>anchor</a></sup>
+<!-- endSnippet -->
+
+
 ### nuget
 
 The NuGet branch of commands have recursively from given path inventories packages present in

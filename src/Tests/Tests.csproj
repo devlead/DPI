@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net5</TargetFramework>
+	<nullable>enable</nullable>
+  </PropertyGroup>
+  <ItemGroup>
+	<PackageReference Include="MarkdownSnippets.MsBuild" Version="23.1.2" PrivateAssets="All" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Verify.Xunit" Version="11.4.0" />
+    <PackageReference Include="Xunit" Version="2.4.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.9.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3" />
+    <ProjectReference Include="..\DPI\DPI.csproj" />
+  </ItemGroup>
+</Project>

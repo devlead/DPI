@@ -1,0 +1,14 @@
+USAGE:
+    dpi [OPTIONS] <COMMAND>
+
+EXAMPLES:
+    dpi nuget <SourcePath> analyze
+    dpi nuget <SourcePath> report
+
+OPTIONS:
+    -h, --help       Prints help information   
+    -v, --version    Prints version information
+                                               
+COMMANDS:
+    nuget    NuGet dependency commands
+                                      

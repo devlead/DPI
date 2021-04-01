@@ -349,3 +349,6 @@ MigrationBackup/
 .ionide/
 
 [Aa]rtifacts/
+
+# ignore Verify temp files
+*.received.*
