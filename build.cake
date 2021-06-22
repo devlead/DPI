@@ -1,3 +1,4 @@
+#tool "dotnet:https://api.nuget.org/v3/index.json?package=GitVersion.Tool&version=5.6.10"
 #addin nuget:?package=System.Text.Json&version=5.0.1&loaddependencies=true
 #load "build/records.cake"
 #load "build/helpers.cake"
@@ -7,6 +8,14 @@
  *****************************/
 Setup(
     static context => {
+         var assertedVersions = context.GitVersion(new GitVersionSettings
+            {
+                OutputType = GitVersionOutput.Json
+            });
+
+        var branchName = assertedVersions.BranchName;
+        var isMainBranch = StringComparer.OrdinalIgnoreCase.Equals("main", branchName);
+
         var gh = context.GitHubActions();
         var buildDate = DateTime.UtcNow;
         var runNumber = gh.IsRunningOnGitHubActions
@@ -16,13 +25,18 @@ Setup(
         var version = FormattableString
                     .Invariant($"{buildDate:yyyy.M.d}.{runNumber}");
 
-        context.Information("Building version {0}", version);
+        context.Information("Building version {0} (Branch: {1}, IsMain: {2})",
+            version,
+            branchName,
+            isMainBranch);
 
         var artifactsPath = context
                             .MakeAbsolute(context.Directory("./artifacts"));
 
         return new BuildData(
             version,
+            isMainBranch,
+            !context.IsRunningOnWindows(),
             "src",
             new DotNetCoreMSBuildSettings()
                 .SetConfiguration("Release")
@@ -181,4 +195,35 @@ Task("Clean")
     )
 .Then("Integration-Tests")
     .Default()
+.Then("Push-GitHub-Packages")
+    .WithCriteria<BuildData>( (context, data) => data.ShouldPushGitHubPackages())
+    .DoesForEach<BuildData, FilePath>(
+        static (data, context)
+            => context.GetFiles(data.NuGetOutputPath.FullPath + "/*.nupkg"),
+        static (data, item, context)
+            => context.DotNetCoreNuGetPush(
+                item.FullPath,
+            new DotNetCoreNuGetPushSettings
+            {
+                Source = data.GitHubNuGetSource,
+                ApiKey = data.GitHubNuGetApiKey
+            }
+        )
+    )
+.Then("Push-NuGet-Packages")
+    .WithCriteria<BuildData>( (context, data) => data.ShouldPushNuGetPackages())
+    .DoesForEach<BuildData, FilePath>(
+        static (data, context)
+            => context.GetFiles(data.NuGetOutputPath.FullPath + "/*.nupkg"),
+        static (data, item, context)
+            => context.DotNetCoreNuGetPush(
+                item.FullPath,
+                new DotNetCoreNuGetPushSettings
+                {
+                    Source = data.NuGetSource,
+                    ApiKey = data.NuGetApiKey
+                }
+        )
+    )
+.Then("GitHub-Actions")
 .Run();
