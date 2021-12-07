@@ -9,7 +9,7 @@ public record BuildData(
     bool IsMainBranch,
     bool ShouldNotPublish,
     DirectoryPath ProjectRoot,
-    DotNetCoreMSBuildSettings MSBuildSettings,
+    DotNetMSBuildSettings MSBuildSettings,
     DirectoryPath ArtifactsPath,
     DirectoryPath OutputPath
     )

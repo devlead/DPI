@@ -38,7 +38,7 @@ Setup(
             isMainBranch,
             !context.IsRunningOnWindows(),
             "src",
-            new DotNetCoreMSBuildSettings()
+            new DotNetMSBuildSettings()
                 .SetConfiguration("Release")
                 .SetVersion(version)
                 .WithProperty("PackAsTool", "true")
@@ -68,18 +68,18 @@ Task("Clean")
     )
 .Then("Restore")
     .Does<BuildData>(
-        static (context, data) => context.DotNetCoreRestore(
+        static (context, data) => context.DotNetRestore(
             data.ProjectRoot.FullPath,
-            new DotNetCoreRestoreSettings {
+            new DotNetRestoreSettings {
                 MSBuildSettings = data.MSBuildSettings
             }
         )
     )
 .Then("Build")
     .Does<BuildData>(
-        static (context, data) => context.DotNetCoreBuild(
+        static (context, data) => context.DotNetBuild(
             data.ProjectRoot.FullPath,
-            new DotNetCoreBuildSettings {
+            new DotNetBuildSettings {
                 NoRestore = true,
                 MSBuildSettings = data.MSBuildSettings
             }
@@ -87,9 +87,9 @@ Task("Clean")
     )
 .Then("Pack")
     .Does<BuildData>(
-        static (context, data) => context.DotNetCorePack(
+        static (context, data) => context.DotNetPack(
             data.ProjectRoot.FullPath,
-            new DotNetCorePackSettings {
+            new DotNetPackSettings {
                 NoBuild = true,
                 NoRestore = true,
                 OutputDirectory = data.NuGetOutputPath,
@@ -99,18 +99,18 @@ Task("Clean")
     )
 .Then("Integration-Tests-Restore-MultiTarget")
     .Does<BuildData>(
-        static (context, data) => context.DotNetCoreRestore(
+        static (context, data) => context.DotNetRestore(
             "./resources/src/MultiTarget/MultiTarget.csproj",
-            new DotNetCoreRestoreSettings {
+            new DotNetRestoreSettings {
                 MSBuildSettings = data.MSBuildSettings
             }
         )
     )
 .Then("Integration-Tests-Tool-Manifest")
     .Does<BuildData>(
-        static (context, data) => context.DotNetCoreTool(
+        static (context, data) => context.DotNetTool(
                 "new",
-                new DotNetCoreToolSettings {
+                new DotNetToolSettings {
                     ArgumentCustomization = args => args
                                                         .Append("tool-manifest"),
                     WorkingDirectory = data.IntegrationTestPath
@@ -119,9 +119,9 @@ Task("Clean")
     )
 .Then("Integration-Tests-Tool-Install")
     .Does<BuildData>(
-        static (context, data) =>  context.DotNetCoreTool(
+        static (context, data) =>  context.DotNetTool(
                 "tool",
-                new DotNetCoreToolSettings {
+                new DotNetToolSettings {
                     ArgumentCustomization = args => args
                                                         .Append("install")
                                                         .AppendSwitchQuoted("--add-source", data.NuGetOutputPath.FullPath)
@@ -133,9 +133,9 @@ Task("Clean")
     )
 .Then("Integration-Tests-Tool-ReportOrAnalyze")
     .Does<BuildData>(
-        static (context, data) => context.DotNetCoreTool(
+        static (context, data) => context.DotNetTool(
                 "tool",
-                new DotNetCoreToolSettings {
+                new DotNetToolSettings {
                     ArgumentCustomization = args => args
                                                         .Append("run")
                                                         .Append("dpi")
@@ -201,9 +201,9 @@ Task("Clean")
         static (data, context)
             => context.GetFiles(data.NuGetOutputPath.FullPath + "/*.nupkg"),
         static (data, item, context)
-            => context.DotNetCoreNuGetPush(
+            => context.DotNetNuGetPush(
                 item.FullPath,
-            new DotNetCoreNuGetPushSettings
+            new DotNetNuGetPushSettings
             {
                 Source = data.GitHubNuGetSource,
                 ApiKey = data.GitHubNuGetApiKey
@@ -216,9 +216,9 @@ Task("Clean")
         static (data, context)
             => context.GetFiles(data.NuGetOutputPath.FullPath + "/*.nupkg"),
         static (data, item, context)
-            => context.DotNetCoreNuGetPush(
+            => context.DotNetNuGetPush(
                 item.FullPath,
-                new DotNetCoreNuGetPushSettings
+                new DotNetNuGetPushSettings
                 {
                     Source = data.NuGetSource,
                     ApiKey = data.NuGetApiKey
