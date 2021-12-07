@@ -97,6 +97,13 @@ Task("Clean")
             }
         )
     )
+.Then("Upload-Artifacts")
+    .Does<BuildData>(
+        static (context, data) => context
+            .GitHubActions()
+            .Commands
+            .UploadArtifact(data.ArtifactsPath, "artifacts")
+    )
 .Then("Integration-Tests-Restore-MultiTarget")
     .Does<BuildData>(
         static (context, data) => context.DotNetRestore(
