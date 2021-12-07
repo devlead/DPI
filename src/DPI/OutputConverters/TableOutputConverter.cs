@@ -23,7 +23,7 @@ namespace DPI.OutputConverters
                 AnsiConsole.Profile.Width = 240;
             }
 
-            AnsiConsole.Render(table);
+            AnsiConsole.Write(table);
 
             if (fileStream != null)
             {
@@ -32,13 +32,13 @@ namespace DPI.OutputConverters
                 {
                     Ansi = AnsiSupport.No,
                     ColorSystem = ColorSystemSupport.NoColors,
-                    Out = writer,
+                    Out = new AnsiConsoleOutput(writer),
                     Interactive = InteractionSupport.No,
                 });
 
                 console.Profile.Width = 240;
 
-                console.Render(table);
+                console.Write(table);
             }
         }
 
