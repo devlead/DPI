@@ -22,7 +22,7 @@ namespace DPI.Commands.NuGet
         private const string NuGetPackagesFilePattern = "{.csproj,dotnet-tools.json,packages.config,.cake}";
 
         private NuGetParsers NuGetParsers { get; }
-       
+
         public override async Task<int> ExecuteAsync(CommandContext context, TSettings settings)
         {
             FilePathCollection filePaths;
@@ -90,7 +90,6 @@ namespace DPI.Commands.NuGet
                 {
                     BuildProvider.AppVeyor => settings.BuildSystem.AppVeyor.Environment.Build.Number.ToString(CultureInfo.InvariantCulture),
                     BuildProvider.AzurePipelines => settings.BuildSystem.AzurePipelines.Environment.Build.Number,
-                    BuildProvider.AzurePipelinesHosted => settings.BuildSystem.AzurePipelines.Environment.Build.Number,
                     BuildProvider.GitHubActions => FormattableString.Invariant($"{settings.BuildSystem.GitHubActions.Environment.Workflow.RunId}-{settings.BuildSystem.GitHubActions.Environment.Workflow.RunNumber}"),
                     _=> DateTime.UtcNow.ToString("yyyyMMddHHmm", CultureInfo.InvariantCulture)
                 },
@@ -98,7 +97,6 @@ namespace DPI.Commands.NuGet
                 {
                     BuildProvider.AppVeyor => settings.BuildSystem.AppVeyor.Environment.Repository.Name,
                     BuildProvider.AzurePipelines => settings.BuildSystem.AzurePipelines.Environment.Repository.RepoName,
-                    BuildProvider.AzurePipelinesHosted => settings.BuildSystem.AzurePipelines.Environment.Repository.RepoName,
                     BuildProvider.GitHubActions => settings.BuildSystem.GitHubActions.Environment.Workflow.Repository,
                     _ => gitFolder?.GetDirectoryName() ?? string.Empty
                 },
@@ -106,7 +104,7 @@ namespace DPI.Commands.NuGet
                 SessionId: Guid.NewGuid(),
                 PlatformFamily: settings.Context.Environment.Platform.Family
             );
-            
+
             foreach (var filePath in filePaths)
             {
                 var filePackageReference = basePackageReference with

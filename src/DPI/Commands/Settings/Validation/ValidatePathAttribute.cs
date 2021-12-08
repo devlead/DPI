@@ -10,16 +10,16 @@ namespace DPI.Commands.Settings.Validation
         {
         }
 
-        public override ValidationResult Validate(ICommandParameterInfo parameterInfo, object? value)
+        public override ValidationResult Validate(CommandParameterContext context)
         {
-            return value switch {
+             return context.Value switch {
                 FilePath filePath when System.IO.File.Exists(filePath.FullPath)
                     => ValidationResult.Success(),
 
                 DirectoryPath  directoryPath when System.IO.Directory.Exists(directoryPath.FullPath)
                     => ValidationResult.Success(),
 
-                _ => ValidationResult.Error($"Invalid {parameterInfo?.PropertyName} ({value}) specified.")
+                _ => ValidationResult.Error($"Invalid {context.Parameter?.PropertyName} ({context.Value}) specified.")
             };
         }
     }
