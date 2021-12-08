@@ -98,6 +98,7 @@ Task("Clean")
         )
     )
 .Then("Upload-Artifacts")
+    .WithCriteria(BuildSystem.IsRunningOnGitHubActions, nameof(BuildSystem.IsRunningOnGitHubActions))
     .Does<BuildData>(
         static (context, data) => context
             .GitHubActions()
