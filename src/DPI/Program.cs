@@ -11,7 +11,7 @@ using DPI.Models;
 using DPI.OutputConverters;
 using DPI.Parsers.NuGet;
 using Spectre.Console.Cli;
-using Spectre.Cli.Extensions.DependencyInjection;
+using Spectre.Console.Cli.Extensions.DependencyInjection;
 
 var serviceCollection = new ServiceCollection()
     .AddLogging(configure =>
