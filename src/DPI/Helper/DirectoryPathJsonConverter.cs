@@ -1,6 +1,4 @@
-﻿using Cake.Core.IO;
-
-namespace DPI.Helper
+﻿namespace DPI.Helper
 {
     public class DirectoryPathJsonConverter : PathJsonConverter<DirectoryPath>
     {

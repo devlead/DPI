@@ -5,6 +5,7 @@
     <TargetFrameworks>net6.0;net7.0</TargetFrameworks>
     <Nullable>enable</Nullable>
     <PackageIcon>icon/dpi.png</PackageIcon>
+    <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,12 +19,16 @@
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
     <PackageReference Include="Cake.Core" Version="3.0.0" />
     <PackageReference Include="Cake.Common" Version="3.0.0" />
-    <PackageReference Include="Cake.Bridge.DependencyInjection" Version="0.9.1" />
+    <PackageReference Include="Cake.Bridge.DependencyInjection" Version="0.13.0" />
     <PackageReference Include="System.Linq.Async" Version="6.0.1" />
   </ItemGroup>
 
   <ItemGroup>
      <None Include="../../icon/LICENSE.md" Pack="true" PackagePath="icon" />
      <None Include="../../icon/dpi.png" Pack="true" PackagePath="icon" />
+  </ItemGroup>
+
+  <ItemGroup>
+     <Using Include="DPI.Models" />
   </ItemGroup>
 </Project>
