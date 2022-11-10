@@ -1,9 +1,6 @@
-﻿using System;
+﻿namespace DPI.Attributes;
 
-namespace DPI.Attributes
+[AttributeUsage(AttributeTargets.Property)]
+public class TableGroupAttribute : Attribute
 {
-    [AttributeUsage(AttributeTargets.Property)]
-    public class TableGroupAttribute : Attribute
-    {
-    }
 }

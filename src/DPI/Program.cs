@@ -1,10 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Memory;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Cake.Bridge.DependencyInjection;
 using DPI.Commands.NuGet;
 using DPI.Commands.Settings.NuGet;
 using DPI.Models;
@@ -23,7 +19,7 @@ var serviceCollection = new ServiceCollection()
                 new ConfigurationBuilder()
                     .Add(new MemoryConfigurationSource
                     {
-                        InitialData = new Dictionary<string, string>
+                        InitialData = new Dictionary<string, string?>
                         {
                             {"LogLevel:System.Net.Http.HttpClient", "Warning"}
                         }
