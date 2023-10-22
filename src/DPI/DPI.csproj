@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <PackageIcon>icon/dpi.png</PackageIcon>
     <ImplicitUsings>enable</ImplicitUsings>
-    <PackageReadmeFile>readme.md</PackageReadmeFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <LangVersion>11</LangVersion>
   </PropertyGroup>
 
