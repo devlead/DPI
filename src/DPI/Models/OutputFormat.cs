@@ -3,6 +3,7 @@
     public enum OutputFormat
     {
         Json,
-        Table
+        Table,
+        Markdown
     }
 }

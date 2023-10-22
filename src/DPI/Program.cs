@@ -37,6 +37,7 @@ var serviceCollection = new ServiceCollection()
     .AddSingleton<ProjectsAssetsParser>()
     .AddSingleton<IOutputConverter, JsonOutputConverter>()
     .AddSingleton<IOutputConverter, TableOutputConverter>()
+    .AddSingleton<IOutputConverter, MarkdownOutputConverter>()
     .AddSingleton<ILookup<OutputFormat, IOutputConverter>, OutputConverterLookup>()
     .AddCakeCore();
 

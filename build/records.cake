@@ -15,9 +15,12 @@ public record BuildData(
     )
 {
     private const string IntegrationTest = "integrationtest";
+    private const string Markdown = nameof(Markdown);
     public DirectoryPath NuGetOutputPath { get; } = OutputPath.Combine("nuget");
     public DirectoryPath BinaryOutputPath { get; } = OutputPath.Combine("bin");
     public DirectoryPath IntegrationTestPath { get; } = OutputPath.Combine(IntegrationTest);
+    public DirectoryPath MarkdownPath { get; } = OutputPath.Combine(Markdown);
+    public FilePath MarkdownIndexPath { get; } = OutputPath.Combine(Markdown).CombineWithFilePath("index.md");
 
     public string GitHubNuGetSource { get; } = System.Environment.GetEnvironmentVariable("GH_PACKAGES_NUGET_SOURCE");
     public string GitHubNuGetApiKey { get; } = System.Environment.GetEnvironmentVariable("GH_PACKAGES_NUGET_APIKEY");
@@ -36,7 +39,8 @@ public record BuildData(
     public ICollection<DirectoryPath> DirectoryPathsToClean = new []{
         ArtifactsPath,
         OutputPath,
-        OutputPath.Combine(IntegrationTest)
+        OutputPath.Combine(IntegrationTest),
+        OutputPath.Combine(Markdown)
     };
 }
 
