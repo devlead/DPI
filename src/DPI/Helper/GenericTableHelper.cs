@@ -28,12 +28,13 @@ namespace DPI.Helper
             // ReSharper disable once ParameterTypeCanBeEnumerable.Local
             // ReSharper disable once ReturnTypeCanBeEnumerable.Local
             static GroupProperty[] GetPropertyNameValues(
-                ICollection<(PropertyInfo PropertyInfo, bool IsTitle)> properties, T row)
+                ICollection<(PropertyInfo PropertyInfo, bool IsTitle, bool IsSource)> properties, T row)
                 => properties
                     .Select(property => new GroupProperty(
                             property.PropertyInfo.Name,
                             GetPropertyValue(property.PropertyInfo.GetValue, row),
-                            property.IsTitle
+                            property.IsTitle,
+                            property.IsSource
                         )
                     )
                     .ToArray();
@@ -50,7 +51,7 @@ namespace DPI.Helper
                     | BindingFlags.Instance
                 ).ToArray();
 
-            (PropertyInfo PropertyInfo, bool IsTitle)[] groupProperties = (
+            (PropertyInfo PropertyInfo, bool IsTitle, bool IsSource)[] groupProperties = (
                 from propertyInfo in propertyInfos
                 let tableGroupAttributes = propertyInfo
                     .GetCustomAttributes(typeof(TableGroupAttribute))
@@ -61,7 +62,8 @@ namespace DPI.Helper
 
                 select (
                     propertyInfo,
-                    tableGroupAttributes.OfType<TableGroupTitleAttribute>().Any()
+                    tableGroupAttributes.OfType<TableGroupTitleAttribute>().Any(),
+                    tableGroupAttributes.OfType<TableSourceAttribute>().Any()
                 )
             ).ToArray();
 

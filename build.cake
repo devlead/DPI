@@ -201,6 +201,44 @@ Task("Clean")
             context.Information("Validated version {0}", data.Version);
         }
     )
+.Then("Integration-Tests-Tool-Validate-Markdown")
+    .Does<BuildData>(
+        static (context, data) => {
+
+            context.DotNetTool(
+                "tool",
+                new DotNetToolSettings {
+                    ArgumentCustomization = args => args
+                                                        .Append("run")
+                                                        .Append("dpi")
+                                                        .Append("nuget")
+                                                        .AppendSwitchQuoted("--output", "markdown")
+                                                        .AppendSwitchQuoted("--file", data.MarkdownIndexPath.FullPath)
+                                                        .Append("../../../")
+                                                        .Append("analyze")
+                                                        .AppendSwitchQuoted("--buildversion", data.Version),
+                    WorkingDirectory = data.IntegrationTestPath,
+                }
+            );
+        }
+    )
+.Then("Integration-Tests-Upload-Results")
+    .WithCriteria(BuildSystem.IsRunningOnGitHubActions, nameof(BuildSystem.IsRunningOnGitHubActions))
+    .Does<BuildData>(
+         async (context, data) => {
+            await GitHubActions.Commands.UploadArtifact(
+                data.MarkdownPath,
+                "Markdown"
+            );
+            GitHubActions.Commands.SetStepSummary(
+                string.Join(
+                    System.Environment.NewLine,
+                    context.FileSystem.GetFile(data.MarkdownIndexPath)
+                        .ReadLines(Encoding.UTF8)
+                )
+            );
+         }
+    )
 .Then("Integration-Tests")
     .Default()
 .Then("Push-GitHub-Packages")

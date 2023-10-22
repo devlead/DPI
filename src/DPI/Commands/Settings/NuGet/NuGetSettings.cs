@@ -51,7 +51,7 @@ namespace DPI.Commands.Settings.NuGet
         public bool Silent { get; init; }
 
         [CommandOption("-o|--output <FORMAT>")]
-        [Description("Specifies optional result output format JSON,TABLE.")]
+        [Description("Specifies optional result output format JSON,TABLE,MARKDOWN.")]
         public OutputFormat? Output { get; init; }
 
         [CommandOption("-f|--file <FILEPATH>")]

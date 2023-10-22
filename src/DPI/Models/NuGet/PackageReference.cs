@@ -38,6 +38,7 @@ namespace DPI.Models.NuGet
         [property: JsonPropertyName("sourceType")] [property: JsonConverter(typeof(JsonStringEnumConverter))]
         NuGetSourceType SourceType = NuGetSourceType.Unknown,
 
+        [property: TableSource]
         [property: TableGroupTitle]
         [property: JsonPropertyName("source")] [property: JsonConverter(typeof(FilePathJsonConverter))]
         FilePath? Source = null,
