@@ -4,7 +4,7 @@
 
 Dependency Inventory .NET Tool - Inventories dependencies and reports to Azure Log Analytics
 
-You can get introduction to the tool, in the blog post: [Introducing DPI - A DevOps tool to inspect dependencies and report to Azure Log Analytics](https://www.devlead.se/posts/2021/2021-03-20-introducing-dpi)
+You can get an introduction to the tool, in the blog post: [Introducing DPI - A DevOps tool to inspect dependencies and report to Azure Log Analytics](https://www.devlead.se/posts/2021/2021-03-20-introducing-dpi)
 
 ## Obtain
 
@@ -12,7 +12,7 @@ You can get introduction to the tool, in the blog post: [Introducing DPI - A Dev
 
 ## Commands
 
-Use `-h` / `--help` to get current list of available commands and options.
+Use `-h` / `--help` to get the current list of available commands and options.
 
 ```bash
 dpi --help
@@ -37,7 +37,7 @@ dpi nuget --output table analyze
 
 #### report
 
-**nuget report** analyzes and reports result to Azure Log Analytics.
+**nuget report** analyzes and reports the result to Azure Log Analytics.
 
 ```bash
 export NuGetReportSettings_WorkspaceId=<workspaceid>
