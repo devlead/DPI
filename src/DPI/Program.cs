@@ -47,6 +47,7 @@ var app = new CommandApp(registrar);
 app.Configure(
     config =>
     {
+        config.UseAssemblyInformationalVersion();
         config.SetApplicationName("dpi");
         config.ValidateExamples();
         config.AddBranch<NuGetSettings>("nuget", nuGet => {
