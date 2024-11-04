@@ -229,7 +229,7 @@ Task("Clean")
          async (context, data) => {
             await GitHubActions.Commands.UploadArtifact(
                 data.MarkdownPath,
-                "Markdown"
+                $"Markdown_{GitHubActions.Environment.Runner.ImageOS ?? GitHubActions.Environment.Runner.OS}_{context.Environment.Runtime.BuiltFramework.Identifier}_{context.Environment.Runtime.BuiltFramework.Version}"
             );
             GitHubActions.Commands.SetStepSummary(
                 string.Join(
