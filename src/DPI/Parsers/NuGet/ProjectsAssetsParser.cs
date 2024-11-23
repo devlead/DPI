@@ -41,6 +41,8 @@ public class ProjectsAssetsParser : INuGetPackageReferenceParser
                             ".NETCoreApp,Version=v5.0" => "net5.0",
                             ".NETCoreApp,Version=v6.0" => "net6.0",
                             ".NETCoreApp,Version=v7.0" => "net7.0",
+                            ".NETCoreApp,Version=v8.0" => "net8.0",
+                            ".NETCoreApp,Version=v9.0" => "net9.0",
                             _ => targetFramework
                         },
                         PackageId = System.IO.Path.GetDirectoryName(package),
