@@ -32,7 +32,17 @@ The NuGet branch of commands have recursively from given path inventories packag
 **nuget analyze** command inventories and outputs result to console or file.
 
 ```bash
+# Output as table (default)
 dpi nuget --output table analyze
+
+# Output as JSON
+dpi nuget --output json analyze
+
+# Output as Markdown
+dpi nuget --output markdown analyze
+
+# Save output to file
+dpi nuget --output json --file dependencies.json analyze
 ```
 
 #### report
@@ -44,5 +54,15 @@ export NuGetReportSettings_WorkspaceId=<workspaceid>
 
 export NuGetReportSettings_SharedKey=<sharedkey>
 
+# Output as table (default)
 dpi nuget --output table report
+
+# Output as JSON
+dpi nuget --output json report
+
+# Output as Markdown
+dpi nuget --output markdown report
+
+# Save output to file
+dpi nuget --output json --file report.json report
 ```
