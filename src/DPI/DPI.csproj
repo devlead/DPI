@@ -16,7 +16,7 @@
     <PackageReference Include="Cake.Core" Version="5.0.0" />
     <PackageReference Include="Cake.Common" Version="5.0.0" />
     <PackageReference Include="Cake.Bridge.DependencyInjection" Version="2025.3.13.96" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.3" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.4" />
   </ItemGroup>
 
   <ItemGroup>
