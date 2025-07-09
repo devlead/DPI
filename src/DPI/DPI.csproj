@@ -11,12 +11,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Devlead.Console" Version="2025.6.11.215" />
+    <PackageReference Include="Devlead.Console" Version="2025.7.9.244" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="6.0.0" />
     <PackageReference Include="Cake.Core" Version="5.0.0" />
     <PackageReference Include="Cake.Common" Version="5.0.0" />
-    <PackageReference Include="Cake.Bridge.DependencyInjection" Version="2025.6.11.161" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.6" />
+    <PackageReference Include="Cake.Bridge.DependencyInjection" Version="2025.6.11.164" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.7" />
   </ItemGroup>
 
   <ItemGroup>
