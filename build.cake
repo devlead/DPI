@@ -1,5 +1,5 @@
 #tool "dotnet:https://api.nuget.org/v3/index.json?package=GitVersion.Tool&version=6.4.0"
-#addin nuget:?package=System.Text.Json&version=9.0.8&loaddependencies=true
+#addin nuget:?package=System.Text.Json&version=9.0.9&loaddependencies=true
 #load "build/records.cake"
 #load "build/helpers.cake"
 
