@@ -23,7 +23,7 @@ namespace DPI.Commands.NuGet
 
         private NuGetParsers NuGetParsers { get; }
 
-        public override async Task<int> ExecuteAsync(CommandContext context, TSettings settings)
+        public override async Task<int> ExecuteAsync(CommandContext context, TSettings settings, CancellationToken cancellationToken)
         {
             FilePathCollection filePaths;
             using (settings.Logger.BeginScope("GetFiles"))
