@@ -1,14 +1,15 @@
-#tool "dotnet:https://api.nuget.org/v3/index.json?package=GitVersion.Tool&version=6.5.0"
-#addin nuget:?package=System.Text.Json&version=10.0.0&loaddependencies=true
-#load "build/records.cake"
-#load "build/helpers.cake"
+#:sdk Cake.Sdk@6.0.0
+#:package xunit.v3.assert@3.2.1
+#:property IncludeAdditionalFiles=./build/*.cs
+using Xunit;
 
 /*****************************
  * Setup
  *****************************/
 Setup(
     static context => {
-         var assertedVersions = context.GitVersion(new GitVersionSettings
+        InstallTool("dotnet:https://api.nuget.org/v3/index.json?package=GitVersion.Tool&version=6.5.1");
+        var assertedVersions = context.GitVersion(new GitVersionSettings
             {
                 OutputType = GitVersionOutput.Json
             });
@@ -16,10 +17,9 @@ Setup(
         var branchName = assertedVersions.BranchName;
         var isMainBranch = StringComparer.OrdinalIgnoreCase.Equals("main", branchName);
 
-        var gh = context.GitHubActions();
         var buildDate = DateTime.UtcNow;
-        var runNumber = gh.IsRunningOnGitHubActions
-                            ? gh.Environment.Workflow.RunNumber
+        var runNumber = GitHubActions.IsRunningOnGitHubActions
+                            ? GitHubActions.Environment.Workflow.RunNumber
                             : (short)((buildDate - buildDate.Date).TotalSeconds/3);
 
         var version = FormattableString
@@ -51,7 +51,7 @@ Setup(
                 .WithProperty("PackageTags", "tool")
                 .WithProperty("PackageDescription", "Dependency Inventory .NET Tool - Inventories dependencies to Azure Log Analytics")
                 .WithProperty("RepositoryUrl", "https://github.com/devlead/DPI.git")
-                .WithProperty("ContinuousIntegrationBuild", gh.IsRunningOnGitHubActions ? "true" : "false")
+                .WithProperty("ContinuousIntegrationBuild", GitHubActions.IsRunningOnGitHubActions ? "true" : "false")
                 .WithProperty("EmbedUntrackedSources", "true"),
             artifactsPath,
             artifactsPath.Combine(version)
@@ -100,11 +100,9 @@ Task("Clean")
 .Then("Upload-Artifacts")
     .WithCriteria(BuildSystem.IsRunningOnGitHubActions, nameof(BuildSystem.IsRunningOnGitHubActions))
     .Does<BuildData>(
-        static (context, data) => context
-            .GitHubActions() is var gh && gh != null
-                ?   gh.Commands
-                    .UploadArtifact(data.ArtifactsPath,  $"Artifact_{gh.Environment.Runner.ImageOS ?? gh.Environment.Runner.OS}_{context.Environment.Runtime.BuiltFramework.Identifier}_{context.Environment.Runtime.BuiltFramework.Version}")
-                : throw new Exception("GitHubActions not available")
+        static (context, data) => GitHubActions
+            .Commands
+            .UploadArtifact(data.ArtifactsPath, $"Artifact_{GitHubActions.Environment.Runner.ImageOS ?? GitHubActions.Environment.Runner.OS}_{context.Environment.Runtime.BuiltFramework.Identifier}_{context.Environment.Runtime.BuiltFramework.Version}")
     )
 .Then("Integration-Tests-Restore-MultiTarget")
     .Does<BuildData>(
@@ -190,6 +188,8 @@ Task("Clean")
             var packageReferences = System.Text.Json.JsonSerializer.Deserialize<DPIPackageReference[]>(
                 string.Concat(json)
             );
+
+            Assert.NotNull(packageReferences);
 
             Array.ForEach(
                 packageReferences,
