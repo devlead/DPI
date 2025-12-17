@@ -1,4 +1,3 @@
-#load "helpers.cake"
 using System.Text.Json.Serialization;
 
 /*****************************
@@ -22,15 +21,15 @@ public record BuildData(
     public DirectoryPath MarkdownPath { get; } = OutputPath.Combine(Markdown);
     public FilePath MarkdownIndexPath { get; } = OutputPath.Combine(Markdown).CombineWithFilePath("index.md");
 
-    public string GitHubNuGetSource { get; } = System.Environment.GetEnvironmentVariable("GH_PACKAGES_NUGET_SOURCE");
-    public string GitHubNuGetApiKey { get; } = System.Environment.GetEnvironmentVariable("GH_PACKAGES_NUGET_APIKEY");
+    public string? GitHubNuGetSource { get; } = System.Environment.GetEnvironmentVariable("GH_PACKAGES_NUGET_SOURCE");
+    public string? GitHubNuGetApiKey { get; } = System.Environment.GetEnvironmentVariable("GH_PACKAGES_NUGET_APIKEY");
 
     public bool ShouldPushGitHubPackages() =>   !ShouldNotPublish
                                                 && !string.IsNullOrWhiteSpace(GitHubNuGetSource)
                                                 && !string.IsNullOrWhiteSpace(GitHubNuGetApiKey);
 
-    public string NuGetSource { get; } = System.Environment.GetEnvironmentVariable("NUGET_SOURCE");
-    public string NuGetApiKey { get; } = System.Environment.GetEnvironmentVariable("NUGET_APIKEY");
+    public string? NuGetSource { get; } = System.Environment.GetEnvironmentVariable("NUGET_SOURCE");
+    public string? NuGetApiKey { get; } = System.Environment.GetEnvironmentVariable("NUGET_APIKEY");
     public bool ShouldPushNuGetPackages() =>    IsMainBranch &&
                                                 !ShouldNotPublish &&
                                                 !string.IsNullOrWhiteSpace(NuGetSource) &&
@@ -44,7 +43,7 @@ public record BuildData(
     };
 }
 
-private record ExtensionHelper(Func<string, CakeTaskBuilder> TaskCreate, Func<CakeReport> Run);
+internal record ExtensionHelper(Func<string, CakeTaskBuilder> TaskCreate, Func<CakeReport> Run);
 
 
 public record DPIPackageReference(
