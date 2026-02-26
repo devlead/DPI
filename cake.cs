@@ -1,5 +1,5 @@
 #:sdk Cake.Sdk@6.0.0
-#:package xunit.v3.assert@3.2.1
+#:package xunit.v3.assert@3.2.2
 #:property IncludeAdditionalFiles=./build/*.cs
 using Xunit;
 
