@@ -8,7 +8,7 @@ using Xunit;
  *****************************/
 Setup(
     static context => {
-        InstallTool("dotnet:https://api.nuget.org/v3/index.json?package=GitVersion.Tool&version=6.6.0");
+        InstallTool("dotnet:https://api.nuget.org/v3/index.json?package=GitVersion.Tool&version=6.6.1");
         var assertedVersions = context.GitVersion(new GitVersionSettings
             {
                 OutputType = GitVersionOutput.Json
