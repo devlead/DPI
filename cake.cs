@@ -1,5 +1,5 @@
-#:sdk Cake.Sdk@6.0.0
-#:package xunit.v3.assert@3.2.1
+#:sdk Cake.Sdk@6.1.1
+#:package xunit.v3.assert@3.2.2
 #:property IncludeAdditionalFiles=./build/*.cs
 using Xunit;
 
@@ -8,7 +8,7 @@ using Xunit;
  *****************************/
 Setup(
     static context => {
-        InstallTool("dotnet:https://api.nuget.org/v3/index.json?package=GitVersion.Tool&version=6.5.1");
+        InstallTool("dotnet:https://api.nuget.org/v3/index.json?package=GitVersion.Tool&version=6.7.0");
         var assertedVersions = context.GitVersion(new GitVersionSettings
             {
                 OutputType = GitVersionOutput.Json
