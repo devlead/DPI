@@ -8,6 +8,7 @@
         PackagesConfig,
         DotNetToolsManifest,
         ProjectAssets,
-        Cake
+        Cake,
+        FileBasedApp
     }
 }

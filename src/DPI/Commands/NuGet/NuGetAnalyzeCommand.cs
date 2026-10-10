@@ -19,7 +19,7 @@ namespace DPI.Commands.NuGet
     // ReSharper disable once ClassNeverInstantiated.Global
     public class NuGetAnalyzeCommand<TSettings> : NuGetCommand<TSettings> where TSettings : NuGetAnalyzeSettings
     {
-        private const string NuGetPackagesFilePattern = "{.csproj,dotnet-tools.json,packages.config,.cake}";
+        private const string NuGetPackagesFilePattern = "{.csproj,dotnet-tools.json,packages.config,.cake,.cs}";
 
         private NuGetParsers NuGetParsers { get; }
 
@@ -136,6 +136,12 @@ namespace DPI.Commands.NuGet
                             filePackageReference
                         ),
                         (_, ".cake") => NuGetParsers.CakeParser.Parse(
+                            settings,
+                            filePath,
+                            gitFolder,
+                            filePackageReference
+                        ),
+                        (_, ".cs") => NuGetParsers.FileBasedAppParser.Parse(
                             settings,
                             filePath,
                             gitFolder,
