@@ -1,3 +1,4 @@
+#!/usr/bin/env dotnet
 #:sdk Cake.Sdk@6.3.0
 #:package xunit.v3.assert@4.0.2
 #:property IncludeAdditionalFiles=./build/*.cs
