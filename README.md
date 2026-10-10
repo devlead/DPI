@@ -26,6 +26,7 @@ The NuGet branch of commands have recursively from given path inventories packag
 * packages.config
 * .NET Tool manifests
 * Cake build script files
+* C# file-based apps (`*.cs` files that start with `#!/usr/bin/env dotnet`, inventorying `#:sdk` and `#:package`; omitted `#:sdk` versions are taken from `msbuild-sdks` in `global.json`)
 
 #### analyze
 

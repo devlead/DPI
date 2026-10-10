@@ -13,6 +13,7 @@ public partial class Program
         .AddSingleton<DotNetToolsManifestParser>()
         .AddSingleton<PackageConfigParser>()
         .AddSingleton<CakeParser>()
+        .AddSingleton<FileBasedAppParser>()
         .AddSingleton<NuGetParsers>()
         .AddSingleton<ProjectsAssetsParser>()
         .AddSingleton<IOutputConverter, JsonOutputConverter>()
