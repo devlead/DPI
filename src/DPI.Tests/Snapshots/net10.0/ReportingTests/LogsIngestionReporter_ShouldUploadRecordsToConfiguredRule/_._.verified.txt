@@ -1,0 +1,5 @@
+{
+  RuleId: dcr-123,
+  Stream: Custom-NuGetReport,
+  UploadedCount: 2
+}

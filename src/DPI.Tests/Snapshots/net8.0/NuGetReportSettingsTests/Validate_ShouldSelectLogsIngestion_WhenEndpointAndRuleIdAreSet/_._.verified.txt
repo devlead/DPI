@@ -1,0 +1,6 @@
+{
+  Successful: true,
+  Message: null,
+  ReportMode: LogsIngestion,
+  Stream: Custom-NuGetReport
+}

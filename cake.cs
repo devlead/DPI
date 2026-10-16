@@ -1,6 +1,7 @@
 #!/usr/bin/env dotnet
 #:sdk Cake.Sdk@6.3.0
 #:package xunit.v3.assert@4.0.2
+#:package System.Security.Cryptography.Pkcs@10.0.13
 #:property IncludeAdditionalFiles=./build/*.cs
 using Xunit;
 
@@ -33,6 +34,7 @@ Setup(
 
         var artifactsPath = context
                             .MakeAbsolute(context.Directory("./artifacts"));
+        var projectRoot = context.MakeAbsolute(context.Directory("./src"));
 
         return new BuildData(
             version,
@@ -40,19 +42,16 @@ Setup(
             !context.IsRunningOnWindows(),
             GitHubActions.IsRunningOnGitHubActions,
             GitHubActions.IsRunningOnGitHubActions ? GitHubActions.Environment.Workflow.Ref : null,
-            "src",
+            projectRoot,
             new DotNetMSBuildSettings()
                 .SetConfiguration("Release")
                 .SetVersion(version)
-                .WithProperty("PackAsTool", "true")
-                .WithProperty("PackageId", "DPI")
                 .WithProperty("Copyright", $"Mattias Karlsson © {DateTime.UtcNow.Year}")
-                .WithProperty("ToolCommandName", "dpi")
                 .WithProperty("Authors", "devlead")
                 .WithProperty("Company", "devlead")
                 .WithProperty("PackageLicenseExpression", "MIT")
                 .WithProperty("PackageTags", "tool")
-                .WithProperty("PackageDescription", "Dependency Inventory .NET Tool - Inventories dependencies to Azure Log Analytics")
+                .WithProperty("PackageDescription", "Dependency Inventory .NET Tool - Inventories dependencies to Azure Monitor Logs")
                 .WithProperty("RepositoryUrl", "https://github.com/devlead/DPI.git")
                 .WithProperty("ContinuousIntegrationBuild", GitHubActions.IsRunningOnGitHubActions ? "true" : "false")
                 .WithProperty("EmbedUntrackedSources", "true"),
@@ -82,7 +81,7 @@ Task("NuGet-Login")
 .Then("Restore")
     .Does<BuildData>(
         static (context, data) => context.DotNetRestore(
-            data.ProjectRoot.FullPath,
+            data.SolutionPath.FullPath,
             new DotNetRestoreSettings {
                 MSBuildSettings = data.MSBuildSettings
             }
@@ -91,9 +90,21 @@ Task("NuGet-Login")
 .Then("Build")
     .Does<BuildData>(
         static (context, data) => context.DotNetBuild(
-            data.ProjectRoot.FullPath,
+            data.SolutionPath.FullPath,
             new DotNetBuildSettings {
                 NoRestore = true,
+                MSBuildSettings = data.MSBuildSettings
+            }
+        )
+    )
+.Then("Test")
+    .Does<BuildData>(
+        static (context, data) => context.DotNetTest(
+            data.TestProjectPath.FullPath,
+            new DotNetTestSettings {
+                NoRestore = true,
+                NoBuild = true,
+                Configuration = "Release",
                 MSBuildSettings = data.MSBuildSettings
             }
         )
@@ -101,7 +112,7 @@ Task("NuGet-Login")
 .Then("Pack")
     .Does<BuildData>(
         static (context, data) => context.DotNetPack(
-            data.ProjectRoot.FullPath,
+            data.ProjectPath.FullPath,
             new DotNetPackSettings {
                 NoBuild = true,
                 NoRestore = true,
@@ -164,9 +175,17 @@ Task("NuGet-Login")
                                                         .AppendSwitchQuoted("--output", "table")
                                                         .Append(
                                                             (
-                                                                !string.IsNullOrWhiteSpace(context.EnvironmentVariable("NuGetReportSettings_SharedKey"))
-                                                                &&
-                                                                !string.IsNullOrWhiteSpace(context.EnvironmentVariable("NuGetReportSettings_WorkspaceId"))
+                                                                (
+                                                                    !string.IsNullOrWhiteSpace(context.EnvironmentVariable("NuGetReportSettings_Endpoint"))
+                                                                    &&
+                                                                    !string.IsNullOrWhiteSpace(context.EnvironmentVariable("NuGetReportSettings_RuleId"))
+                                                                )
+                                                                ||
+                                                                (
+                                                                    !string.IsNullOrWhiteSpace(context.EnvironmentVariable("NuGetReportSettings_SharedKey"))
+                                                                    &&
+                                                                    !string.IsNullOrWhiteSpace(context.EnvironmentVariable("NuGetReportSettings_WorkspaceId"))
+                                                                )
                                                             )
                                                                 ? "report"
                                                                 : "analyze"

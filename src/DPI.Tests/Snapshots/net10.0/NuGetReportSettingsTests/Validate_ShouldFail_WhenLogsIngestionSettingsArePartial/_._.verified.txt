@@ -1,0 +1,4 @@
+{
+  Successful: false,
+  Message: RuleId not specified as argument --rule-id <RULEID>, nor environment variable NuGetReportSettings_RuleId
+}

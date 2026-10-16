@@ -1,0 +1,4 @@
+{
+  uploaded: false,
+  Stream: Custom-NuGetReport
+}
