@@ -349,3 +349,10 @@ MigrationBackup/
 .ionide/
 
 [Aa]rtifacts/
+
+# Compiled Bicep output
+deploy/azure-monitor/*.json
+
+# Verify
+*.received.*
+*.received/

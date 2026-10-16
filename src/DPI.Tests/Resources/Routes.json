@@ -1,0 +1,21 @@
+[
+  {
+    "Request": {
+      "Methods": [
+        {
+          "Method": "POST"
+        }
+      ],
+      "AbsoluteUri": "https://workspace-id.ods.opinsights.azure.com/api/logs?api-version=2016-04-01"
+    },
+    "Responses": [
+      {
+        "RequestHeaders": {},
+        "ContentResource": "Empty.json",
+        "ContentType": "application/json",
+        "ContentHeaders": {},
+        "StatusCode": 200
+      }
+    ]
+  }
+]

@@ -1,0 +1,15 @@
+{
+  sessionId: Guid_1,
+  buildProvider: GitHubActions,
+  platformFamily: Windows,
+  buildNo: 42,
+  buildSCM: abcdef,
+  buildVersion: 2026.10.16.1,
+  sourceType: CSProj,
+  source: src/DPI/DPI.csproj,
+  targetFramework: net8.0,
+  packageId: Azure.Identity,
+  version: 1.21.0,
+  timestamp: {Scrubbed},
+  Computer: {Scrubbed}
+}

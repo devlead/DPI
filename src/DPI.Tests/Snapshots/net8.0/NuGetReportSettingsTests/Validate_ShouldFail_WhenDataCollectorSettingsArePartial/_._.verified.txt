@@ -1,0 +1,4 @@
+{
+  Successful: false,
+  Message: SharedKey not specified as argument --sharedkey <SHAREDKEY>, nor environment variable NuGetReportSettings_SharedKey. Prefer Logs Ingestion API settings --endpoint <ENDPOINT> and --rule-id <RULEID>.
+}
