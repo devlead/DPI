@@ -1,0 +1,4 @@
+{
+  WorkspaceId: workspace-id,
+  LogType: NuGetReport
+}

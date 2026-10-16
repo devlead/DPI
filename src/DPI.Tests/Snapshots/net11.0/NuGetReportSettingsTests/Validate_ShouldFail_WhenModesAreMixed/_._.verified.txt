@@ -1,0 +1,4 @@
+{
+  Successful: false,
+  Message: Specify either Logs Ingestion API settings (--endpoint and --rule-id) or deprecated Data Collector API settings (--workspace and --sharedkey), not both.
+}

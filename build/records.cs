@@ -17,6 +17,9 @@ public record BuildData(
 {
     private const string IntegrationTest = "integrationtest";
     private const string Markdown = nameof(Markdown);
+    public FilePath SolutionPath { get; } = ProjectRoot.CombineWithFilePath("DPI.slnx");
+    public FilePath ProjectPath { get; } = ProjectRoot.CombineWithFilePath("DPI/DPI.csproj");
+    public FilePath TestProjectPath { get; } = ProjectRoot.CombineWithFilePath("DPI.Tests/DPI.Tests.csproj");
     public DirectoryPath NuGetOutputPath { get; } = OutputPath.Combine("nuget");
     public DirectoryPath BinaryOutputPath { get; } = OutputPath.Combine("bin");
     public DirectoryPath IntegrationTestPath { get; } = OutputPath.Combine(IntegrationTest);

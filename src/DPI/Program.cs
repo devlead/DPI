@@ -1,4 +1,5 @@
 ﻿using DPI.Commands.NuGet;
+using DPI.Commands.NuGet.Reporting;
 using DPI.Commands.Settings.NuGet;
 using DPI.OutputConverters;
 using DPI.Parsers.NuGet;
@@ -9,6 +10,11 @@ public partial class Program
         services.AddHttpClient()
         .AddTransient<NuGetAnalyzeSettings>()
         .AddTransient<NuGetReportSettings>()
+        .AddSingleton<ILogsIngestionClientFactory, DefaultLogsIngestionClientFactory>()
+        .AddSingleton<ILogsIngestionUploader, LogsIngestionUploader>()
+        .AddSingleton<LogsIngestionReporter>()
+        .AddSingleton<DataCollectorReporter>()
+        .AddSingleton<LogAnalyticsReporterFactory>()
         .AddSingleton<CsProjParser>()
         .AddSingleton<DotNetToolsManifestParser>()
         .AddSingleton<PackageConfigParser>()
@@ -34,7 +40,7 @@ public partial class Program
                 .WithExample(["nuget", "<SourcePath>", "analyze"]);
 
             nuGet.AddCommand<NuGetReportCommand>("report")
-                .WithDescription("Inventories NuGet packages and reports to Azure Log Analytics")
+                .WithDescription("Inventories NuGet packages and reports to Azure Monitor Logs")
                 .WithExample(["nuget", "<SourcePath>", "report"]);
         });
     }

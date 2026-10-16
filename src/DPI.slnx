@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="DPI/DPI.csproj" />
+  <Project Path="DPI.Tests/DPI.Tests.csproj" />
+</Solution>

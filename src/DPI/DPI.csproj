@@ -8,9 +8,14 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <LangVersion>12</LangVersion>
+    <PackAsTool>true</PackAsTool>
+    <PackageId>DPI</PackageId>
+    <ToolCommandName>dpi</ToolCommandName>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Azure.Identity" Version="1.21.0" />
+    <PackageReference Include="Azure.Monitor.Ingestion" Version="1.2.0" />
     <PackageReference Include="Devlead.Console" Version="2026.10.15.984" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="6.0.0" />
     <PackageReference Include="Cake.Core" Version="6.3.0" />

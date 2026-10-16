@@ -1,0 +1,4 @@
+{
+  Message: Failed to upload 2 records to Azure Monitor Logs Ingestion API (status 403).,
+  Inner: RequestFailedException
+}
