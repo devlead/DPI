@@ -1,7 +1,7 @@
 #!/usr/bin/env dotnet
 #:sdk Cake.Sdk@6.3.0
 #:package xunit.v3.assert@4.0.2
-#:package System.Security.Cryptography.Pkcs@10.0.13
+#:package System.Security.Cryptography.Pkcs@10.0.14
 #:property IncludeAdditionalFiles=./build/*.cs
 using Xunit;
 
@@ -174,19 +174,7 @@ Task("NuGet-Login")
                                                         .Append("../../../")
                                                         .AppendSwitchQuoted("--output", "table")
                                                         .Append(
-                                                            (
-                                                                (
-                                                                    !string.IsNullOrWhiteSpace(context.EnvironmentVariable("NuGetReportSettings_Endpoint"))
-                                                                    &&
-                                                                    !string.IsNullOrWhiteSpace(context.EnvironmentVariable("NuGetReportSettings_RuleId"))
-                                                                )
-                                                                ||
-                                                                (
-                                                                    !string.IsNullOrWhiteSpace(context.EnvironmentVariable("NuGetReportSettings_SharedKey"))
-                                                                    &&
-                                                                    !string.IsNullOrWhiteSpace(context.EnvironmentVariable("NuGetReportSettings_WorkspaceId"))
-                                                                )
-                                                            )
+                                                            data.ShouldReportDPI()
                                                                 ? "report"
                                                                 : "analyze"
                                                             )
