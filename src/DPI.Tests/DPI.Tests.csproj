@@ -27,10 +27,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Cake.Bridge.DependencyInjection.Testing" Version="2026.10.15.869" />
+    <PackageReference Include="Cake.Bridge.DependencyInjection.Testing" Version="2026.10.26.892" />
     <PackageReference Include="Cake.Testing" Version="6.3.0" />
     <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage" Version="18.12.0" />
-    <PackageReference Include="Devlead.Testing.MockHttp" Version="2026.10.15.1037" />
+    <PackageReference Include="Devlead.Testing.MockHttp" Version="2026.10.26.1076" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.11.0" />
     <PackageReference Include="NSubstitute" Version="6.2.0" />
     <PackageReference Include="Verify.DiffPlex" Version="3.4.0" />
