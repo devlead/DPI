@@ -1,6 +1,6 @@
 #!/usr/bin/env dotnet
 #:sdk Cake.Sdk@6.3.0
-#:package xunit.v3.assert@4.0.2
+#:package xunit.v3.assert@4.0.3
 #:package System.Security.Cryptography.Pkcs@10.0.14
 #:property IncludeAdditionalFiles=./build/*.cs
 using Xunit;
