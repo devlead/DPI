@@ -25,11 +25,7 @@ public static class VerifyConfig
 
 #if NET11_0
     private const string TargetFrameworkMoniker = "net11.0";
-#elif NET10_0
-    private const string TargetFrameworkMoniker = "net10.0";
-#elif NET9_0
-    private const string TargetFrameworkMoniker = "net9.0";
 #else
-    private const string TargetFrameworkMoniker = "net8.0";
+    private const string TargetFrameworkMoniker = "net10.0";
 #endif
 }
