@@ -163,7 +163,12 @@ Task("NuGet-Login")
     )
 .Then("Integration-Tests-Tool-ReportOrAnalyze")
     .Does<BuildData>(
-        static (context, data) => context.DotNetTool(
+        static async (context, data) => {
+            var workload = data.ShouldReportDPI() && data.ShouldPrepareAzureWorkloadIdentity()
+                            ? await GitHubActions.Commands.AzurePrepareWorkloadIdentity(data.AzureTenantId!, data.AzureClientId!)
+                            : null;
+
+            context.DotNetTool(
                 "tool",
                 new DotNetToolSettings {
                     ArgumentCustomization = args => args
@@ -178,9 +183,17 @@ Task("NuGet-Login")
                                                                 : "analyze"
                                                             )
                                                         .AppendSwitchQuoted("--buildversion", data.Version),
-                    WorkingDirectory = data.IntegrationTestPath
+                    WorkingDirectory = data.IntegrationTestPath,
+                    EnvironmentVariables = workload is null
+                        ? new Dictionary<string, string>()
+                        : new Dictionary<string, string> {
+                            ["AZURE_TENANT_ID"] = workload.TenantId,
+                            ["AZURE_CLIENT_ID"] = workload.ClientId,
+                            ["AZURE_FEDERATED_TOKEN_FILE"] = workload.FederatedTokenFile.FullPath
+                        }
                 }
-            )
+            );
+        }
     )
 .Then("Integration-Tests-Tool-Validate-Manifest")
     .Does<BuildData>(
