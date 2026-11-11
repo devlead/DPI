@@ -1,5 +1,0 @@
-{
-  Successful: true,
-  Message: null,
-  ReportMode: DataCollector
-}

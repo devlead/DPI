@@ -1,4 +1,0 @@
-{
-  Reporter: LogsIngestionReporter,
-  SameAsLogsIngestion: true
-}

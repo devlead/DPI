@@ -1,4 +1,0 @@
-{
-  Reporter: DataCollectorReporter,
-  SameAsDataCollector: true
-}
