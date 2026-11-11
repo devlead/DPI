@@ -1,4 +1,0 @@
-{
-  Successful: false,
-  Message: Endpoint must be an absolute HTTPS URI.
-}
